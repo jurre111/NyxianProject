@@ -63,7 +63,7 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add "$GITHUB_WORKSPACE/Nyxian/LindChain/LLVM.xcframework"
+          git add -f "$GITHUB_WORKSPACE/Nyxian/LindChain/LLVM.xcframework"
           git commit -m "Add Frameworks"
           git push
         env:
