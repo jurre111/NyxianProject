@@ -57,8 +57,17 @@ jobs:
   
             # Move LLVM.xcframework
             mkdir -p Nyxian/LindChain
-            mv LLVM.xcframework Nyxian/LindChain/LLVM.xcframework
+            mv LLVM.xcframework $GITHUB_WORKSPACE/Nyxian/LindChain/LLVM.xcframework
             echo "Success!"
+      - name: Commit and push Framework to repository
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add "$GITHUB_WORKSPACE/downloads/$scheme.ipa"
+          git commit -m "Add Frameworks"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set Scheme
         id: scheme
         run: |
