@@ -16,3 +16,4 @@ rm -rf tmp
 
 # Now move LLVM.xcframework
 mv LLVM.xcframework Nyxian/LindChain/LLVM.xcframework
+echo "Succes!"

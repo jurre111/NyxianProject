@@ -29,6 +29,36 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Get frameworks ready
+        run: |
+            set -e  # Exit immediately if a command exits with a non-zero status
+            
+            # Download LLVM.zip
+            if ! wget https://nyxian.app/bootstrap/LLVM.zip; then
+              echo "Error: Failed to download LLVM.zip"
+              exit 1
+            fi
+  
+            # Create a tmp folder and prepare it
+            mkdir -p tmp
+            mv LLVM.zip tmp/LLVM.zip
+  
+            # Enter, extract, and move it back
+            cd tmp
+            if ! unzip LLVM.zip; then
+              echo "Error: Failed to unzip LLVM.zip"
+              exit 1
+            fi
+            mv LLVM.xcframework ../LLVM.xcframework
+  
+            # Exit the dir and remove it
+            cd ..
+            rm -rf tmp
+  
+            # Move LLVM.xcframework
+            mkdir -p Nyxian/LindChain
+            mv LLVM.xcframework Nyxian/LindChain/LLVM.xcframework
+            echo "Success!"
       - name: Set Scheme
         id: scheme
         run: |
