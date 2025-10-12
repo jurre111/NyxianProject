@@ -21,6 +21,7 @@
 #import <LindChain/ProcEnvironment/environment.h>
 #import <LindChain/LiveContainer/zip.h>
 #import <Security/Security.h>
+#import <LindChain/Services/Service.h>
 
 bool checkCodeSignature(const char* path);
 
@@ -310,6 +311,7 @@ bool checkCodeSignature(const char* path);
 
 void ApplicationManagementDaemonEntry(void)
 {
-    environment_proxy_set_endpoint_for_service_identifier([[LDEApplicationWorkspaceServerManager sharedManager] getEndpointForNewConnections], @"com.cr4zy.appmanagementd");
+    ServiceServer *serviceServer = [[ServiceServer alloc] initWithClass:[LDEApplicationWorkspaceProxy class] withProtocol:@protocol(LDEApplicationWorkspaceProxyProtocol)];
+    environment_proxy_set_endpoint_for_service_identifier([serviceServer getEndpointForConnection], @"com.cr4zy.appmanagementd");
     CFRunLoopRun();
 }
