@@ -254,7 +254,11 @@ DEFINE_HOOK(execle, int, (const char *path,
     envp = va_arg(ap, char *const *);
     va_end(ap);
 
-    return environment_execvpa(path, argv, envp, false);
+    int result = environment_execvpa(path, argv, envp, false);
+    
+    free(argv);
+    
+    return result;
 }
 
 DEFINE_HOOK(execlp, int, (const char * __path,
@@ -294,7 +298,11 @@ DEFINE_HOOK(execlp, int, (const char * __path,
     argv[argc] = NULL;
     va_end(ap);
     
-    return environment_execvpa(__path, argv, environ, true);
+    int result = environment_execvpa(__path, argv, environ, true);
+    
+    free(argv);
+    
+    return result;
 }
 
 DEFINE_HOOK(execv, int, (const char * __path,
@@ -353,6 +361,11 @@ DEFINE_HOOK(_exit, void, (int code))
     }
 }
 
+DEFINE_HOOK(exit, void, (int code))
+{
+    return hook__exit(code);
+}
+
 #pragma mark - Initilizer
 
 void environment_fork_init(void)
@@ -368,6 +381,7 @@ void environment_fork_init(void)
         DO_HOOK_GLOBAL(execvp);
         DO_HOOK_GLOBAL(close);
         DO_HOOK_GLOBAL(dup2);
+        DO_HOOK_GLOBAL(exit);
         DO_HOOK_GLOBAL(_exit);
     }
 }
