@@ -7,7 +7,6 @@
 #import "LDEAppScene.h"
 #import "LDEWindow.h"
 #import <LindChain/LiveContainer/LCUtils.h>
-#import "PiPManager.h"
 #import "Localization.h"
 #import <LindChain/ProcEnvironment/Server/Server.h>
 #import <LindChain/Private/UIKitPrivate.h>

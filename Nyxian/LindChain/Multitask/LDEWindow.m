@@ -3,7 +3,6 @@
 //#import "LiveContainerSwiftUI-Swift.h"
 #import "LDEAppScene.h"
 #import <LindChain/Private/UIKitPrivate.h>
-#import "PiPManager.h"
 #import "../LiveContainer/Localization.h"
 #import "utils.h"
 #import <objc/runtime.h>
@@ -37,7 +36,6 @@ void UIKitFixesInit(void) {
 
 @interface LDEWindow ()
 
-@property (nonatomic) UIViewController *childVC;
 @property (nonatomic) UITextView *processLog;
 @property (nonatomic) NSArray* activatedVerticalConstraints;
 @property (nonatomic) CGRect originalFrame;
@@ -58,7 +56,6 @@ void UIKitFixesInit(void) {
     self = [super initWithNibName:nil bundle:nil];
     _appSceneVC = [[LDEAppScene alloc] initWithProcess:process withDelegate:self];
     if(!_appSceneVC) return nil;
-    _childVC = _appSceneVC;
     _multitaskingTermination = NO;
     
     [self setupDecoratedView:rect];
@@ -75,13 +72,6 @@ void UIKitFixesInit(void) {
         NSArray *menuItems = @[
             [UIAction actionWithTitle:@"Copy Pid" image:[UIImage systemImageNamed:@"doc.on.doc"] identifier:nil handler:^(UIAction * _Nonnull action) {
                 UIPasteboard.generalPasteboard.string = @(self.appSceneVC.process.pid).stringValue;
-            }],
-            [UIAction actionWithTitle:@"Enable Pip" image:[UIImage systemImageNamed:@"pip.enter"] identifier:nil handler:^(UIAction * _Nonnull action) {
-                if ([PiPManager.shared isPiPWithVC:self.appSceneVC]) {
-                    [PiPManager.shared stopPiP];
-                } else {
-                    [PiPManager.shared startPiPWithVC:self.appSceneVC];
-                }
             }],
             [UICustomViewMenuElement elementWithViewProvider:^UIView *(UICustomViewMenuElement *element) {
                 return [self scaleSliderViewWithTitle:@"Scale" min:0.5 max:2.0 value:self.scaleRatio stepInterval:0.01];
@@ -250,23 +240,19 @@ void UIKitFixesInit(void) {
     self.view.layer.borderWidth = 0.5;
     self.view.layer.borderColor = UIColor.systemGray3Color.CGColor;
     
-    if(_childVC)
+    if(_appSceneVC)
     {
-        [self addChildViewController:_childVC];
-        [self.view insertSubview:_childVC.view atIndex:0];
-        _childVC.view.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addChildViewController:_appSceneVC];
+        [self.view insertSubview:_appSceneVC.view atIndex:0];
+        _appSceneVC.view.translatesAutoresizingMaskIntoConstraints = NO;
         
         [self updateVerticalConstraints];
         [NSLayoutConstraint activateConstraints:@[
-            [_childVC.view.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-            [_childVC.view.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor]
+            [_appSceneVC.view.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+            [_appSceneVC.view.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor]
         ]];
     }
     
-    
-    //NSUserDefaults *defaults = NSUserDefaults.lcSharedDefaults;
-
-    //[defaults addObserver:self forKeyPath:@"LCMultitaskBottomWindowBar" options:NSKeyValueObservingOptionNew context:NULL];
     [self updateOriginalFrame];
 }
 
@@ -337,21 +323,6 @@ void UIKitFixesInit(void) {
             if(completed) [self.view removeFromSuperview];
         }];
     });
-}
-
-- (void)minimizeWindowPiP {
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        self.view.alpha = 0;
-    } completion:^(BOOL finished) {
-        self.view.hidden = YES;
-    }];
-}
-
-- (void)unminimizeWindowPiP {
-    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        self.view.hidden = NO;
-        self.view.alpha = 1;
-    } completion:nil];
 }
 
 - (void)maximizeWindow {
@@ -479,27 +450,13 @@ void UIKitFixesInit(void) {
     });
 }
 
-- (void)appSceneVC:(LDEAppScene*)vc didUpdateFromSettings:(UIMutableApplicationSceneSettings *)baseSettings transitionContext:(id)newContext {
+- (void)appSceneVC:(LDEAppScene*)vc didUpdateFromSettings:(UIMutableApplicationSceneSettings *)baseSettings transitionContext:(id)newContext
+{
     UIMutableApplicationSceneSettings *newSettings = [vc.presenter.scene.settings mutableCopy];
     newSettings.userInterfaceStyle = baseSettings.userInterfaceStyle;
     newSettings.interfaceOrientation = baseSettings.interfaceOrientation;
     newSettings.deviceOrientation = baseSettings.deviceOrientation;
-    
-    //newSettings.foreground = YES;
-    
-    /*if(self.isMaximized) {
-        [self updateMaximizedFrameWithSettings:newSettings];
-    } else {
-        [self updateWindowedFrameWithSettings:newSettings];
-    }*/
-    //CGRect newFrame = CGRectMake(0, 0, self.view.frame.size.width/self.scaleRatio, (self.view.frame.size.height - self.navigationBar.frame.size.height)/self.scaleRatio);
-    
-    /*if(UIInterfaceOrientationIsLandscape(baseSettings.interfaceOrientation)) {
-        newSettings.frame = CGRectMake(0, 0, newFrame.size.height, newFrame.size.width);
-    } else {
-        newSettings.frame = CGRectMake(0, 0, newFrame.size.width, newFrame.size.height);
-    }*/
-    
+        
     [self.appSceneVC resizeActionStart];
     [self.appSceneVC resizeActionEnd];
     
@@ -586,7 +543,8 @@ void UIKitFixesInit(void) {
     [self updateOriginalFrame];
 }
 
-- (void)resizeWindow:(UIPanGestureRecognizer*)gesture {
+- (void)resizeWindow:(UIPanGestureRecognizer*)gesture
+{
     if(_isMaximized) return;
     
     switch (gesture.state) {
@@ -613,62 +571,45 @@ void UIKitFixesInit(void) {
     }
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
     [super touchesBegan:touches withEvent:event];
     // FIXME: how to bring view to front when touching the passthrough view?
     [self.view.superview bringSubviewToFront:self.view];
 }
 
-- (void)updateVerticalConstraints {
+- (void)updateVerticalConstraints
+{
     // Update safe area insets
-    if(_isMaximized && self.appSceneVC) {
+    if(_isMaximized && self.appSceneVC)
+    {
         __weak typeof(self) weakSelf = self;
-        self.appSceneVC.nextUpdateSettingsBlock = ^(UIMutableApplicationSceneSettings *settings) {
+        self.appSceneVC.nextUpdateSettingsBlock = ^(UIMutableApplicationSceneSettings *settings)
+        {
             [weakSelf updateMaximizedFrameWithSettings:settings];
         };
     }
     
-    BOOL bottomWindowBar = NO;//[NSUserDefaults.lcSharedDefaults boolForKey:@"LCMultitaskBottomWindowBar"];
-    BOOL hideWindowBar = NO; //MultitaskDockManager.shared.isCollapsed && _isMaximized;
-    CGFloat navBarHeight = hideWindowBar ? 0 : 44;
-    self.navigationBar.hidden = hideWindowBar;
-    
     [NSLayoutConstraint deactivateConstraints:self.activatedVerticalConstraints];
-    if(bottomWindowBar) {
-        self.activatedVerticalConstraints = @[
-            [self.childVC.view.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-            [self.childVC.view.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:-navBarHeight],
-            [self.navigationBar.heightAnchor constraintEqualToConstant:navBarHeight]
-        ];
-    } else {
-        self.activatedVerticalConstraints = @[
-            [self.childVC.view.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:navBarHeight],
-            [self.childVC.view.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
-            [self.navigationBar.heightAnchor constraintEqualToConstant:navBarHeight]
-        ];
-    }
+    self.activatedVerticalConstraints = @[
+        [self.appSceneVC.view.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:44],
+        [self.appSceneVC.view.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+        [self.navigationBar.heightAnchor constraintEqualToConstant:44]
+    ];
     [NSLayoutConstraint activateConstraints:self.activatedVerticalConstraints];
 }
 
-- (UIEdgeInsets)updateMaximizedSafeAreaWithSettings:(UIMutableApplicationSceneSettings *)settings {
-    BOOL bottomWindowBar = NO;//[NSUserDefaults.lcSharedDefaults boolForKey:@"LCMultitaskBottomWindowBar"];
+- (UIEdgeInsets)updateMaximizedSafeAreaWithSettings:(UIMutableApplicationSceneSettings *)settings
+{
     UIEdgeInsets safeAreaInsets = self.view.window.safeAreaInsets;
-    if(self.navigationBar.hidden) {
-        settings.peripheryInsets = safeAreaInsets;
-        safeAreaInsets = UIEdgeInsetsZero;
-    } else if(bottomWindowBar) {
-        // allow the control bar to overlap the bottom safe area
-        safeAreaInsets.bottom = 0;
-        settings.peripheryInsets = safeAreaInsets;
-        safeAreaInsets.top = safeAreaInsets.left = safeAreaInsets.right = 0;
-    } else {
-        settings.peripheryInsets = UIEdgeInsetsMake(0, safeAreaInsets.left, safeAreaInsets.bottom, safeAreaInsets.right);
-        safeAreaInsets.bottom = safeAreaInsets.left = safeAreaInsets.right = 0;
-    }
+    settings.peripheryInsets = UIEdgeInsetsMake(0, safeAreaInsets.left, safeAreaInsets.bottom, safeAreaInsets.right);
+    safeAreaInsets.bottom = safeAreaInsets.left = safeAreaInsets.right = 0;
     
     // scale peripheryInsets to match the scale ratio
     settings.peripheryInsets = UIEdgeInsetsMake(settings.peripheryInsets.top/_scaleRatio, settings.peripheryInsets.left/_scaleRatio, settings.peripheryInsets.bottom/_scaleRatio, settings.peripheryInsets.right/_scaleRatio);
-    if(UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPad) {
+    
+    if(UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPad)
+    {
         UIInterfaceOrientation currentOrientation = UIApplication.sharedApplication.statusBarOrientation;
         if(UIInterfaceOrientationIsLandscape(currentOrientation)) {
             safeAreaInsets.top = 0;
