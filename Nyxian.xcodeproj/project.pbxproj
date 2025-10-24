@@ -130,7 +130,6 @@
 				"LindChain/LiveContainer/Tweaks/UIKit+GuestHooksInit.m",
 				LindChain/LiveContainer/utils.m,
 				LindChain/LLVM.xcframework,
-				LindChain/ObjC/Swizzle.m,
 				LindChain/Private/mach/fileport.m,
 				LindChain/ProcEnvironment/application.m,
 				LindChain/ProcEnvironment/cred.m,
@@ -156,6 +155,7 @@
 				LindChain/ProcEnvironment/sysctl.m,
 				LindChain/ProcEnvironment/tfp.m,
 				LindChain/ProcEnvironment/Utils/fd.c,
+				LindChain/Utils/Swizzle.m,
 			);
 			target = 79BF97F62E6291EE00C60D4C /* LiveProcess */;
 		};

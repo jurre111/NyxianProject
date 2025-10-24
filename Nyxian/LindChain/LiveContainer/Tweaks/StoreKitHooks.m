@@ -18,7 +18,7 @@
 */
 
 #import <StoreKit/StoreKit.h>
-#import <LindChain/ObjC/Swizzle.h>
+#import <LindChain/Utils/Swizzle.h>
 
 @implementation SKStoreReviewController (LiveContainer)
 

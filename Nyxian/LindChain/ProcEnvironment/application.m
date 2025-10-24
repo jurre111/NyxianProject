@@ -22,7 +22,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <LindChain/ProcEnvironment/application.h>
 #import <LindChain/ProcEnvironment/environment.h>
-#import <LindChain/ObjC/Swizzle.h>
+#import <LindChain/Utils/Swizzle.h>
 
 #pragma mark - UIApplication entry detection (Used to trigger window apparance, headless processes basically)
 
