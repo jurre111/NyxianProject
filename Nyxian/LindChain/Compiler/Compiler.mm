@@ -38,6 +38,7 @@ int CompileObject(int argc,
 @interface Compiler ()
 
 @property (nonatomic,strong) NSArray * _Nonnull flags;
+@property (nonatomic,strong) NSString *triple;
 @property (nonatomic,strong) NSLock *lock;
 
 @end
@@ -48,9 +49,11 @@ int CompileObject(int argc,
 /// Method that initilizes the more-use Compiler
 ///
 - (instancetype)init:(NSArray*)flags
+  withPlatformTriple:(NSString*)triple;
 {
     self = [super init];
     _flags = [flags copy];
+    _triple = [triple copy];
     self.lock = [[NSLock alloc] init];
     
     return self;
@@ -61,7 +64,6 @@ int CompileObject(int argc,
 ///
 - (int)compileObject:(nonnull NSString*)filePath
           outputFile:(NSString*)outputFilePath
-      platformTriple:(NSString*)platformTriple
               issues:(NSArray<Synitem*> * * _Nonnull)issues
 {
     // Allocating a C array by the given _flags array
@@ -77,7 +79,7 @@ int CompileObject(int argc,
 
     // Compile and get the resulting integer
     char *errorString = NULL;
-    const int result = CompileObject(argc, (const char**)argv, [outputFilePath UTF8String], [platformTriple UTF8String], &errorString);
+    const int result = CompileObject(argc, (const char**)argv, [outputFilePath UTF8String], [_triple UTF8String], &errorString);
     
     // Check if errorString is allocated, if so...
     if(errorString)

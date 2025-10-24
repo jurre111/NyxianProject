@@ -40,7 +40,7 @@ class Builder {
         
         let genericCompilerFlags: [String] = self.project.projectConfig.generateCompilerFlags() as! [String]
         
-        self.compiler = Compiler(genericCompilerFlags)
+        self.compiler = Compiler(genericCompilerFlags, withPlatformTriple: self.project.projectConfig.platformTriple)
         self.linker = Linker()
         
         try? syncFolderStructure(from: project.path.URLGet(), to: project.cachePath.URLGet())
@@ -203,7 +203,6 @@ class Builder {
                 if self.compiler.compileObject(
                     filePath,
                     outputFile: "\(self.project.cachePath!)/\(expectedObjectFile(forPath: relativePath(from: self.project.path.URLGet(), to: filePath.URLGet())))",
-                    platformTriple: self.project.projectConfig.platformTriple,
                     issues: &issues
                 ) != 0 {
                     threader?.lockdown()
