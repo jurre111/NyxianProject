@@ -26,7 +26,7 @@ class SettingsViewController: UIThemedTableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 7
+        return 6
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -61,10 +61,6 @@ class SettingsViewController: UIThemedTableViewController {
             cell.textLabel?.text = "Miscellaneous"
             break
         case 5:
-            cell.imageView?.image = UIImage(systemName: "person.3.sequence.fill")
-            cell.textLabel?.text = "Credits"
-            break
-        case 6:
             cell.imageView?.image = UIImage(systemName: "info")
             cell.textLabel?.text = "Info"
             break
@@ -94,8 +90,6 @@ class SettingsViewController: UIThemedTableViewController {
             case 4:
                 return MiscellaneousController(style: .insetGrouped)
             case 5:
-                return CreditsViewController(style: .insetGrouped)
-            case 6:
                 return AppInfoViewController(style: .insetGrouped)
             default:
                 return nil

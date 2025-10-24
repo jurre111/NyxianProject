@@ -27,26 +27,59 @@ let buildVersion: Double = 0.6
 
 // AppInfoView
 class AppInfoViewController: UIThemedTableViewController {
+    
+    private var credits: [Credit] = [
+        Credit(name: "Frida", role: "Maintainer", githubURL: "https://github.com/cr4zyengineer"),
+        Credit(name: "Duy Tran", role: "LiveContainer", githubURL: "https://github.com/khanhduytran0"),
+        Credit(name: "Huge_Black", role: "LiveContainer", githubURL: "https://github.com/hugeBlack"),
+        Credit(name: "Lars Fröder", role: "litehook", githubURL: "https://github.com/opa334")
+    ]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.title = "Info"
+        
+        self.tableView.register(CreditCell.self, forCellReuseIdentifier: CreditCell.identifier)
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? 1 : 3
+        switch section {
+        case 0:
+            return 1
+        case 1:
+            return 3
+        case 2:
+            return credits.count
+        default:
+            return 0
+        }
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return section == 0 ? nil : "Nyxian"
+        switch section {
+        case 1:
+            return "Nyxian"
+        case 2:
+            return "Credits"
+        default:
+            return nil
+        }
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return (indexPath.section == 0) ? 120 : tableView.rowHeight
+        switch indexPath.section {
+        case 0:
+            return 120
+        case 2:
+            return 80
+        default:
+            return tableView.rowHeight
+        }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -71,7 +104,9 @@ class AppInfoViewController: UIThemedTableViewController {
                 imageView.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
                 imageView.centerXAnchor.constraint(equalTo: cell.contentView.centerXAnchor)
             ])
-        }else {
+            
+            cell.selectionStyle = .none
+        } else if indexPath.section == 1 {
             switch indexPath.row {
             case 0:
                 cell.textLabel?.text = "Name"
@@ -83,10 +118,48 @@ class AppInfoViewController: UIThemedTableViewController {
                 cell.textLabel?.text = "Stage"
                 cell.detailTextLabel?.text = buildStage
             }
+            
+            cell.selectionStyle = .none
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: CreditCell.identifier, for: indexPath) as? CreditCell else {
+                return UITableViewCell()
+            }
+            
+            let credit = credits[indexPath.row]
+            cell.nameLabel.text = credit.name
+            cell.roleLabel.text = credit.role
+            
+            downloadImage(from: "\(credit.githubURL).png") { image in
+                cell.profileImageView.image = image ?? UIImage(systemName: "person.circle")
+            }
+            
+            return cell
         }
         
-        cell.selectionStyle = .none
-        
         return cell
+    }
+    
+    func downloadImage(from urlString: String, completion: @escaping (UIImage?) -> Void) {
+        guard let url = URL(string: urlString) else {
+            completion(nil)
+            return
+        }
+        
+        URLSession.shared.dataTask(with: url) { data, _, error in
+            if let data = data, let image = UIImage(data: data) {
+                DispatchQueue.main.async { completion(image) }
+            } else {
+                DispatchQueue.main.async { completion(nil) }
+            }
+        }.resume()
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.section != 2 { return }
+        let credit = credits[indexPath.row]
+        if let url = URL(string: credit.githubURL) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
