@@ -49,6 +49,7 @@
  Core
  */
 #import <LindChain/Core/LDEThreadControl.h>
+#import <LindChain/Core/LDEFilesFinder.h>
 
 /*
  UI

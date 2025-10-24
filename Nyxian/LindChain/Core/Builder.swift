@@ -45,7 +45,7 @@ class Builder {
         
         try? syncFolderStructure(from: project.path.URLGet(), to: project.cachePath.URLGet())
         
-        self.dirtySourceFiles = FindFilesStack(self.project.path, ["c","cpp","m","mm"], ["Resources"])
+        self.dirtySourceFiles = LDEFilesFinder(self.project.path, ["c","cpp","m","mm"], ["Resources"])
         for item in dirtySourceFiles {
             objectFiles.append("\(self.project.cachePath!)/\(expectedObjectFile(forPath: relativePath(from: self.project.path.URLGet(), to: item.URLGet())))")
         }
@@ -131,7 +131,7 @@ class Builder {
     ///
     func clean() throws {
         // now remove what was find
-        for file in FindFilesStack(
+        for file in LDEFilesFinder(
             self.project.path,
             ["o","tmp"],
             ["Resources","Config"]

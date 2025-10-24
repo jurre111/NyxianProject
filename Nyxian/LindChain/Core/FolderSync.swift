@@ -74,7 +74,7 @@ func syncFolderStructure(from sourceURL: URL,
     ///
     /// This is a early code of fixing the issue where object and source files are out of sync when removing source code files
     ///
-    let rsourceSet: Set<String> = Set(FindFilesStack(
+    let rsourceSet: Set<String> = Set(LDEFilesFinder(
         sourceURL.path,
         ["c", "cpp", "mm", "m"],
         ["Resources"]
@@ -82,7 +82,7 @@ func syncFolderStructure(from sourceURL: URL,
         expectedObjectFile(forPath: relativePath(from: sourceURL, to: URL(fileURLWithPath: $0)))
     })
     
-    let robject: [String] = FindFilesStack(
+    let robject: [String] = LDEFilesFinder(
         destinationURL.path,
         ["o"],
         ["Resources"]
