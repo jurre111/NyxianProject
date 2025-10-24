@@ -23,6 +23,10 @@ import Runestone
 class CustomizationViewController: UIThemedTableViewController {
     var textField: UITextField?
     
+    var currentIconName: String {
+        UIApplication.shared.alternateIconName ?? "Default"
+    }
+    
     var icons: [String] = [
         "Default",
         "Drawn",
@@ -110,8 +114,9 @@ int main(void)
                 }
             }
         } else {
-            cell = UITableViewCell()
+            cell = UITableViewCell(style: .default, reuseIdentifier: nil)
             let iconName = icons[indexPath.row]
+            
             if let image = UIImage(named: {
                 if #available(iOS 18.0, *) {
                     return "IconPreview\(iconName)"
@@ -133,31 +138,40 @@ int main(void)
                     customImageView.heightAnchor.constraint(equalToConstant: 50)
                 ])
             }
-            
+
             cell.textLabel?.text = iconName
             cell.textLabel?.font = UIFont.systemFont(ofSize: 14, weight: .bold)
             cell.textLabel?.translatesAutoresizingMaskIntoConstraints = false
             NSLayoutConstraint.activate([
                 cell.textLabel!.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
-                cell.textLabel!.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 80) // room for image
+                cell.textLabel!.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 80)
             ])
+            
+            if iconName == currentIconName {
+                cell.accessoryType = .checkmark
+            } else {
+                cell.accessoryType = .none
+            }
         }
 
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.tableView.deselectRow(at: indexPath, animated: true)
-        
+        tableView.deselectRow(at: indexPath, animated: true)
         guard indexPath.section == 2 else { return }
-        
-        let iconName: String = self.icons[indexPath.row]
+
+        let iconName = icons[indexPath.row]
         
         if iconName == "Default" {
             UIApplication.shared.setAlternateIconName(nil)
-            return
+        } else {
+            UIApplication.shared.setAlternateIconName(iconName)
         }
         
-        UIApplication.shared.setAlternateIconName(iconName)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            tableView.reloadSections(IndexSet(integer: 2), with: .automatic)
+        }
     }
+
 }
