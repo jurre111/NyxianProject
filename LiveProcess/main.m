@@ -28,7 +28,6 @@
 #import <LindChain/ProcEnvironment/posix_spawn.h>
 #import <LindChain/ProcEnvironment/Surface/surface.h>
 #import <LindChain/ProcEnvironment/Object/FDMapObject.h>
-#import <LindChain/Services/fdsnapshotd/FDSnapshotInternal.h>
 
 bool performHookDyldApi(const char* functionName, uint32_t adrpOffset, void** origFunction, void* hookFunction);
 
@@ -144,10 +143,6 @@ int LiveProcessMain(int argc, char *argv[]) {
         if([service isEqualToString:@"appmanagementd"])
         {
             ApplicationManagementDaemonEntry();
-        }
-        else if([service isEqualToString:@"fdsnapshotd"])
-        {
-            FDSnapshotDaemonEntry();
         }
     }
     else if([mode isEqualToString:@"spawn"])

@@ -89,7 +89,6 @@
 				LindChain/LiveContainer/zip.m,
 				LindChain/Services/applicationmgmtd/LDEApplicationObject.m,
 				LindChain/Services/applicationmgmtd/LDEApplicationWorkspaceInternal.m,
-				LindChain/Services/fdsnapshotd/FDSnapshotInternal.m,
 				LindChain/Services/Service.m,
 				main.m,
 			);
