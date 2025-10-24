@@ -49,11 +49,13 @@ int CompileObject(int argc,
 /// Method that initilizes the more-use Compiler
 ///
 - (instancetype)init:(NSArray*)flags
-  withPlatformTriple:(NSString*)triple;
 {
     self = [super init];
     _flags = [flags copy];
-    _triple = [triple copy];
+    
+    NSUInteger index = [_flags indexOfObject:@"-target"];
+    _triple = [_flags objectAtIndex:index + 1];
+    
     self.lock = [[NSLock alloc] init];
     
     return self;

@@ -40,7 +40,7 @@ class Builder {
         
         let genericCompilerFlags: [String] = self.project.projectConfig.generateCompilerFlags() as! [String]
         
-        self.compiler = Compiler(genericCompilerFlags, withPlatformTriple: self.project.projectConfig.platformTriple)
+        self.compiler = Compiler(genericCompilerFlags)
         self.linker = Linker()
         
         try? syncFolderStructure(from: project.path.URLGet(), to: project.cachePath.URLGet())
