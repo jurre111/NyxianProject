@@ -74,8 +74,6 @@
  */
 - (void)apply_fd_map;
 
-- (void)swapFDTable;
-
 /*!
  @method closeWithFileDescriptor:
  @abstract Closes a specific file descriptor.
