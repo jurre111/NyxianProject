@@ -101,31 +101,30 @@
                          classType:[NSString class]];
 }
 
+- (NSNumber*)readNumberForKey:(NSString *)key
+             withDefaultValue:(NSNumber *)defaultValue
+{
+    return [self readSecureFromKey:key
+                  withDefaultValue:defaultValue
+                         classType:[NSNumber class]];
+}
+
 - (NSInteger)readIntegerForKey:(NSString *)key
               withDefaultValue:(NSInteger)defaultValue
 {
-    NSNumber *number = [self readSecureFromKey:key
-                              withDefaultValue:@(defaultValue)
-                                     classType:[NSNumber class]];
-    return [number integerValue];
+    return [[self readNumberForKey:key withDefaultValue:@(defaultValue)] integerValue];
 }
 
 - (BOOL)readBooleanForKey:(NSString *)key
          withDefaultValue:(BOOL)defaultValue
 {
-    NSNumber *number = [self readSecureFromKey:key
-                              withDefaultValue:@(defaultValue)
-                                     classType:[NSNumber class]];
-    return [number boolValue];
+    return [[self readNumberForKey:key withDefaultValue:@(defaultValue)] boolValue];
 }
 
 - (double)readDoubleForKey:(NSString *)key
           withDefaultValue:(double)defaultValue
 {
-    NSNumber *number = [self readSecureFromKey:key
-                              withDefaultValue:@(defaultValue)
-                                     classType:[NSNumber class]];
-    return [number doubleValue];
+    return [[self readNumberForKey:key withDefaultValue:@(defaultValue)] doubleValue];
 }
 
 - (NSArray*)readArrayForKey:(NSString *)key

@@ -31,6 +31,7 @@
 - (id _Nonnull)readKey:(NSString * _Nonnull)key;
 - (id _Nonnull)readSecureFromKey:(NSString * _Nonnull)key withDefaultValue:(id _Nonnull)value classType:Class;
 - (NSString * _Nonnull)readStringForKey:(NSString * _Nonnull)key withDefaultValue:(NSString * _Nonnull)defaultValue;
+- (NSNumber * _Nonnull)readNumberForKey:(NSString * _Nonnull)key withDefaultValue:(NSNumber * _Nonnull)defaultValue;
 - (NSInteger)readIntegerForKey:(NSString * _Nonnull)key withDefaultValue:(NSInteger)defaultValue;
 - (BOOL)readBooleanForKey:(NSString * _Nonnull)key withDefaultValue:(BOOL)defaultValue;
 - (double)readDoubleForKey:(NSString * _Nonnull)key withDefaultValue:(double)defaultValue;
