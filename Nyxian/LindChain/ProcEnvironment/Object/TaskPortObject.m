@@ -17,23 +17,14 @@
  along with Nyxian. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PROCENVIRONMENT_MACHPORT_OBJECT
-#define PROCENVIRONMENT_MACHPORT_OBJECT
+#import <LindChain/ProcEnvironment/Object/TaskPortObject.h>
 
-/* ----------------------------------------------------------------------
- *  Apple API Headers
- * -------------------------------------------------------------------- */
-#import <Foundation/Foundation.h>
-#import <mach/mach.h>
+@implementation TaskPortObject
 
-@interface MachPortObject : NSObject <NSSecureCoding>
-
-@property (nonatomic, readonly) mach_port_t port;
-
-- (instancetype)initWithPort:(mach_port_t)port;
-
-- (BOOL)isUsable;
+// MARK: Apple seems to have implemented mach port transmission into iOS 26, as in iOS 18.7 RC and below it crashes but on iOS 26.0 RC it actually transmitts the task port
++ (instancetype)taskPortSelf
+{
+    return [[TaskPortObject alloc] initWithPort:mach_task_self()];
+}
 
 @end
-
-#endif /* PROCENVIRONMENT_MACHPORT_OBJECT */

@@ -141,6 +141,7 @@
 				LindChain/ProcEnvironment/Object/MachOObject.m,
 				LindChain/ProcEnvironment/Object/MachPortObject.m,
 				LindChain/ProcEnvironment/Object/MappingPortObject.m,
+				LindChain/ProcEnvironment/Object/TaskPortObject.m,
 				LindChain/ProcEnvironment/posix_spawn.m,
 				LindChain/ProcEnvironment/proxy.m,
 				LindChain/ProcEnvironment/Surface/entitlement.m,

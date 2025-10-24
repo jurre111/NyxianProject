@@ -29,12 +29,6 @@
     return self;
 }
 
-// MARK: Apple seems to have implemented mach port transmission into iOS 26, as in iOS 18.7 RC and below it crashes but on iOS 26.0 RC it actually transmitts the task port
-+ (instancetype)taskPortSelf
-{
-    return [[MachPortObject alloc] initWithPort:mach_task_self()];
-}
-
 + (BOOL)supportsSecureCoding
 {
     return YES;

@@ -24,7 +24,7 @@
 #import <LindChain/Private/UIKitPrivate.h>
 #import <LindChain/Multitask/LDEProcessManager.h>
 #import <LindChain/ProcEnvironment/Object/MachPortObject.h>
-#import <LindChain/ProcEnvironment/Object/MappingPortObject.h>
+#import <LindChain/ProcEnvironment/Object/TaskPortObject.h>
 #import <LindChain/ProcEnvironment/Object/MachOObject.h>
 #import <LindChain/ProcEnvironment/posix_spawn.h>
 #import <LindChain/ProcEnvironment/Surface/surface.h>
@@ -44,8 +44,8 @@ typedef NS_OPTIONS(uint64_t, CredentialSet) {
 /*
  tfp_userspace
  */
-- (void)sendPort:(MachPortObject*)machPort API_AVAILABLE(ios(26.0));
-- (void)getPort:(pid_t)pid withReply:(void (^)(MachPortObject*))reply API_AVAILABLE(ios(26.0));
+- (void)sendPort:(TaskPortObject*)machPort API_AVAILABLE(ios(26.0));
+- (void)getPort:(pid_t)pid withReply:(void (^)(TaskPortObject*))reply API_AVAILABLE(ios(26.0));
 
 /*
  libproc_userspace

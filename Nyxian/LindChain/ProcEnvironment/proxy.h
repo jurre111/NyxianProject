@@ -36,10 +36,10 @@ extern NSObject<ServerProtocol> *hostProcessProxy;
 // MARK: Helper symbols that are intended stabilizing the proc environment api proxy wise and reduce the amount of deadlocking in the future
 
 /// Sends a task port to the host application to hand it to other requesting processes
-void environment_proxy_tfp_send_port_object(MachPortObject *port) API_AVAILABLE(ios(26.0));
+void environment_proxy_tfp_send_port_object(TaskPortObject *port) API_AVAILABLE(ios(26.0));
 
 /// Get a task port from the host application that a other process has handed in using `environment_proxy_tfp_send_port_object(TaskPortObject *port)`
-MachPortObject *environment_proxy_tfp_get_port_object_for_process_identifier(pid_t process_identifier) API_AVAILABLE(ios(26.0));
+TaskPortObject *environment_proxy_tfp_get_port_object_for_process_identifier(pid_t process_identifier) API_AVAILABLE(ios(26.0));
 
 /// Gets the list of all process identifiers running
 NSSet *environment_proxy_proc_list_all_process_identifier(void);

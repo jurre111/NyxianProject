@@ -121,16 +121,16 @@ sync_call_with_timeout_pid(void (^invoke)(void (^reply)(pid_t)))
     return (waited == 0) ? result : -1;
 }
 
-void environment_proxy_tfp_send_port_object(MachPortObject *port)
+void environment_proxy_tfp_send_port_object(TaskPortObject *port)
 {
     environment_must_be_role(EnvironmentRoleGuest);
     [hostProcessProxy sendPort:port];
 }
 
-MachPortObject *environment_proxy_tfp_get_port_object_for_process_identifier(pid_t process_identifier)
+TaskPortObject *environment_proxy_tfp_get_port_object_for_process_identifier(pid_t process_identifier)
 {
     environment_must_be_role(EnvironmentRoleGuest);
-    return sync_call_with_timeout(PROXY_TYPE_REPLY(MachPortObject*){
+    return sync_call_with_timeout(PROXY_TYPE_REPLY(TaskPortObject*){
         [hostProcessProxy getPort:process_identifier withReply:reply];
     });
 }
