@@ -24,11 +24,22 @@ class CertificateImporter: UIThemedTableViewController, UITextFieldDelegate {
     var textField: UITextField?
     
     var cert: ImportTableCell?
+    let callback: () -> Void
     
     let sectionTitles: [String] = [
         "Certificate",
         "Password"
     ]
+    
+    init(style: UITableView.Style,
+         callback: @escaping () -> Void) {
+        self.callback = callback
+        super.init(style: style)
+    }
+    
+    @MainActor required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -124,5 +135,7 @@ class CertificateImporter: UIThemedTableViewController, UITextFieldDelegate {
         }
         
         self.dismiss(animated: true)
+        
+        callback()
     }
 }

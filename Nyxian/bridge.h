@@ -55,3 +55,5 @@
  UI
  */
 #import <UI/TableCells/NXProjectTableCell.h>
+
+BOOL invokeCheck(void);

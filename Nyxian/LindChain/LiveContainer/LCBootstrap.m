@@ -17,6 +17,7 @@
 #include <mach-o/ldsyms.h>
 #import <LindChain/Services/applicationmgmtd/LDEApplicationObject.h>
 #import <LindChain/ProcEnvironment/Surface/surface.h>
+#import <LindChain/ProcEnvironment/Object/MachOObject.h>
 
 NSUserDefaults *lcUserDefaults;
 NSBundle *lcMainBundle;
@@ -215,6 +216,49 @@ NSString* invokeAppMain(NSString *executablePath,
         return @"Could not find the main entry point";
 
     return [NSString stringWithFormat:@"App returned from its main function with code %d.", appMain(argc, argv)];
+}
+
+BOOL invokeCheck(void)
+{
+    // Try
+    NSString *libCheckUnsignedPath = [NSString stringWithFormat:@"%@/Shared/libcheck.dylib", [[NSBundle mainBundle] bundlePath]];
+    NSString *libCheckResignedPath = [NSTemporaryDirectory() stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.dylib", [[NSUUID UUID] UUIDString]]];
+    
+    NSError *error = nil;
+    [[NSFileManager defaultManager] copyItemAtPath:libCheckUnsignedPath toPath:libCheckResignedPath error:&error];
+    if(error) return NO;
+    
+    // Resigning
+    MachOObject *object = [[MachOObject alloc] initWithPath:libCheckResignedPath];
+    if(!object) return NO;
+    [object signAndWriteBack];
+    
+    // Preload executable to bypass RT_NOLOAD
+    appMainImageIndex = _dyld_image_count();
+    void *appHandle = dlopenBypassingLock(libCheckResignedPath.fileSystemRepresentation, RTLD_LAZY|RTLD_GLOBAL|RTLD_FIRST);
+    appExecutableHandle = appHandle;
+    const char *dlerr = dlerror();
+    
+    if (!appHandle || (uint64_t)appHandle > 0xf00000000000) {
+        if (dlerr)
+        {
+            [[NSFileManager defaultManager] removeItemAtPath:libCheckResignedPath error:nil];
+            NSLog(@"%s\n", dlerr);
+            return NO;
+        }
+    }
+
+    // Find main()
+    unsigned char (*appMain)(void) = getAppEntryPoint(appHandle);
+    if (!appMain)
+    {
+        [[NSFileManager defaultManager] removeItemAtPath:libCheckResignedPath error:nil];
+        return NO;
+    }
+    
+    unsigned char retval = appMain();
+    [[NSFileManager defaultManager] removeItemAtPath:libCheckResignedPath error:nil];
+    return (retval == 0b10101010);
 }
 
 static void exceptionHandler(NSException *exception) {
