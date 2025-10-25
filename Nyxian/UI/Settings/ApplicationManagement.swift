@@ -164,7 +164,11 @@ class ApplicationManagementViewController: UIThemedTableViewController, UITextFi
                         DispatchQueue.main.async {
                             LDEProcessManager.shared().spawnProcess(withBundleIdentifier: bundleId, with: LDEProcessConfiguration.userApplication())
                             let appObject: LDEApplicationObject = LDEApplicationWorkspace.shared().applicationObject(forBundleID: miBundle.identifier)
-                            ApplicationManagementViewController.applications.append(appObject)
+                            if let index = ApplicationManagementViewController.applications.firstIndex(where: { $0.bundleIdentifier == appObject.bundleIdentifier }) {
+                                ApplicationManagementViewController.applications[index] = appObject
+                            } else {
+                                ApplicationManagementViewController.applications.append(appObject)
+                            }
                             self.tableView.reloadData()
                         }
                     } else {
