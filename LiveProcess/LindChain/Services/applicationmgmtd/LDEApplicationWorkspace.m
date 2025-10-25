@@ -20,7 +20,7 @@
 #import "LDEApplicationWorkspace.h"
 #import <LindChain/Private/FoundationPrivate.h>
 #import <LindChain/ProcEnvironment/Server/Server.h>
-#import <LindChain/LiveContainer/zip.h>
+#import <LindChain/Utils/Zip.h>
 #import <LindChain/Multitask/LDEProcessManager.h>
 #import <LindChain/LaunchServices/LaunchService.h>
 

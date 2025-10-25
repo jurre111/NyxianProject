@@ -29,7 +29,7 @@
 #import <LindChain/Debugger/Logger.h>
 #import <LindChain/Multitask/LDEMultitaskManager.h>
 #import <LindChain/Services/applicationmgmtd/LDEApplicationWorkspace.h>
-#import <LindChain/LiveContainer/zip.h>
+#import <LindChain/Utils/Zip.h>
 #import <LindChain/Private/UIKitPrivate.h>
 #import <LindChain/Multitask/LDEProcessManager.h>
 #import <LindChain/LiveContainer/ZSign/zsigner.h>
@@ -55,9 +55,3 @@
  UI
  */
 #import <UI/TableCells/NXProjectTableCell.h>
-
-NSString* invokeAppMain(NSString *bundlePath, NSString *homePath, int argc, char *argv[]);
-NSString* invokeBinaryMain(NSString *bundlePath, int argc, char *argv[]);
-const char *getExceptionFromObjectFile(const char *objectFilePath,
-                                       const char *functionName,
-                                       uint64_t offset);

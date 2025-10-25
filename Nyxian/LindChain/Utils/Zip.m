@@ -17,7 +17,7 @@
  along with Nyxian. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#import "zip.h"
+#import <LindChain/Utils/Zip.h>
 
 #ifndef MY_LIBARCHIVE_H
 #define MY_LIBARCHIVE_H

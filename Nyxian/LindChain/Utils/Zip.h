@@ -17,8 +17,13 @@
  along with Nyxian. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#ifndef LINDCHAIN_UTILS_ZIP_H
+#define LINDCHAIN_UTILS_ZIP_H
+
 #import <Foundation/Foundation.h>
 
 BOOL unzipArchiveAtPath(NSString *zipPath, NSString *destinationPath);
 BOOL unzipArchiveFromFileHandle(NSFileHandle *zipFileHandle, NSString *destinationPath);
 BOOL zipDirectoryAtPath(NSString *directoryPath, NSString *zipPath, BOOL keepParent);
+
+#endif /* LINDCHAIN_UTILS_ZIP_H */

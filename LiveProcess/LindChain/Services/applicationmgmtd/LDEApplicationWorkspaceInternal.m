@@ -19,7 +19,7 @@
 
 #import "LDEApplicationWorkspaceInternal.h"
 #import <LindChain/ProcEnvironment/environment.h>
-#import <LindChain/LiveContainer/zip.h>
+#import <LindChain/Utils/Zip.h>
 #import <Security/Security.h>
 #import <LindChain/Services/Service.h>
 

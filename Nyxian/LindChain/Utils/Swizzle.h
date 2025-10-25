@@ -17,8 +17,8 @@
  along with Nyxian. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef LINDCHAIN_OBJC_SWIZZLE_H
-#define LINDCHAIN_OBJC_SWIZZLE_H
+#ifndef LINDCHAIN_UTILS_SWIZZLE_H
+#define LINDCHAIN_UTILS_SWIZZLE_H
 
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
@@ -34,4 +34,4 @@
 
 @end
 
-#endif /* LINDCHAIN_OBJC_SWIZZLE_H */
+#endif /* LINDCHAIN_UTILS_SWIZZLE_H */

@@ -86,7 +86,6 @@
 		79BF983D2E62930600C60D4C /* Exceptions for "LiveProcess" folder in "LiveProcess" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				LindChain/LiveContainer/zip.m,
 				LindChain/Services/applicationmgmtd/LDEApplicationObject.m,
 				LindChain/Services/applicationmgmtd/LDEApplicationWorkspaceInternal.m,
 				LindChain/Services/Service.m,
@@ -97,7 +96,6 @@
 		79BF98402E62931E00C60D4C /* Exceptions for "LiveProcess" folder in "Nyxian" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				LindChain/LiveContainer/zip.m,
 				LindChain/Services/applicationmgmtd/LDEApplicationObject.m,
 				LindChain/Services/applicationmgmtd/LDEApplicationWorkspace.m,
 				LindChain/Services/applicationmgmtd/LDEApplicationWorkspaceInternal.m,
@@ -156,6 +154,7 @@
 				LindChain/ProcEnvironment/tfp.m,
 				LindChain/ProcEnvironment/Utils/fd.c,
 				LindChain/Utils/Swizzle.m,
+				LindChain/Utils/Zip.m,
 			);
 			target = 79BF97F62E6291EE00C60D4C /* LiveProcess */;
 		};
