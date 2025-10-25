@@ -46,19 +46,19 @@ class SettingsViewController: UIThemedTableViewController {
             break
         case 1:
             cell.imageView?.image = UIImage(systemName: "app.badge.fill")
-            cell.textLabel?.text = "Application Management"
+            cell.textLabel?.text = "Applications"
             break
         case 2:
             cell.imageView?.image = UIImage(systemName: "apple.terminal.fill")
-            cell.textLabel?.text = "Process Management"
+            cell.textLabel?.text = "Processes"
             break
         case 3:
             cell.imageView?.image = UIImage(systemName: "paintbrush.fill")
             cell.textLabel?.text = "Customization"
             break
         case 4:
-            cell.imageView?.image = UIImage(systemName: "tray.2.fill")
-            cell.textLabel?.text = "Miscellaneous"
+            cell.imageView?.image = UIImage(systemName: "checkmark.seal.text.page.fill")
+            cell.textLabel?.text = "Certificate"
             break
         case 5:
             cell.imageView?.image = UIImage(systemName: "info")
@@ -88,7 +88,7 @@ class SettingsViewController: UIThemedTableViewController {
             case 3:
                 return CustomizationViewController(style: .insetGrouped)
             case 4:
-                return MiscellaneousController(style: .insetGrouped)
+                return CertificateController(style: .insetGrouped)
             case 5:
                 return AppInfoViewController(style: .insetGrouped)
             default:

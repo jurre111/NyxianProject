@@ -30,7 +30,7 @@ class ProcessManagementViewController: UIThemedTableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.title = "Process Management"
+        self.title = "Processes"
         tableView.register(ProcessCell.self, forCellReuseIdentifier: ProcessCell.reuseID)
 
         dataSource = UITableViewDiffableDataSource<Section, Int32>(tableView: tableView) { [weak self] tableView, indexPath, pid in
