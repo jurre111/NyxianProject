@@ -110,12 +110,15 @@ class CertificateImporter: UIThemedTableViewController, UITextFieldDelegate {
     
     @objc func importButton() {
         do {
-            let p12Data: Data = try Data(contentsOf: URL(fileURLWithPath: self.cert!.url!.path))
-            let appGroupUserDefault = UserDefaults.init(suiteName: LCUtils.appGroupID()) ?? UserDefaults.standard
-            appGroupUserDefault.set(p12Data, forKey: "LCCertificateData")
-            appGroupUserDefault.set(textField?.text ?? "", forKey: "LCCertificatePassword")
-            appGroupUserDefault.set(NSDate.now, forKey: "LCCertificateUpdateDate")
-            UserDefaults.standard.set(LCUtils.appGroupID(), forKey: "LCAppGroupID")
+            if let cert = cert,
+               let url = cert.url {
+                let p12Data: Data = try Data(contentsOf: url)
+                let appGroupUserDefault = UserDefaults.init(suiteName: LCUtils.appGroupID()) ?? UserDefaults.standard
+                appGroupUserDefault.set(p12Data, forKey: "LCCertificateData")
+                appGroupUserDefault.set(textField?.text ?? "", forKey: "LCCertificatePassword")
+                appGroupUserDefault.set(NSDate.now, forKey: "LCCertificateUpdateDate")
+                UserDefaults.standard.set(LCUtils.appGroupID(), forKey: "LCAppGroupID")
+            }
         } catch {
             NotificationServer.NotifyUser(level: .error, notification: "Something went wrong importing the CertBlob! \(error.localizedDescription)")
         }
