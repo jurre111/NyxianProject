@@ -127,7 +127,7 @@ BOOL unzipArchiveAtPath(NSString *zipPath, NSString *destinationPath) {
     return YES;
 }
 
-BOOL unzipArchiveFromFileHandle(NSFileHandle *zipFileHandle, NSString *destinationPath) {
+BOOL unzipArchiveFromFileDescriptor(int fd, NSString *destinationPath) {
     struct archive *a;
     struct archive *ext;
     struct archive_entry *entry;
@@ -142,7 +142,6 @@ BOOL unzipArchiveFromFileHandle(NSFileHandle *zipFileHandle, NSString *destinati
                                         ARCHIVE_EXTRACT_ACL | ARCHIVE_EXTRACT_FFLAGS);
 
     // Open archive from file descriptor
-    int fd = zipFileHandle.fileDescriptor;
     if ((r = archive_read_open_fd(a, fd, 10240))) { // block size = 10240
         NSLog(@"archive_read_open_fd() failed: %s", archive_error_string(a));
         archive_read_free(a);
@@ -170,6 +169,10 @@ BOOL unzipArchiveFromFileHandle(NSFileHandle *zipFileHandle, NSString *destinati
     archive_write_close(ext);
     archive_write_free(ext);
     return YES;
+}
+
+BOOL unzipArchiveFromFileHandle(NSFileHandle *zipFileHandle, NSString *destinationPath) {
+    return unzipArchiveFromFileDescriptor(zipFileHandle.fileDescriptor, destinationPath);
 }
 
 BOOL zipDirectoryAtPath(NSString *directoryPath, NSString *zipPath, BOOL keepParent) {

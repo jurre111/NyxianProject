@@ -17,8 +17,8 @@
  along with Nyxian. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PROCENVIRONMENT_FILEOBJECT_H
-#define PROCENVIRONMENT_FILEOBJECT_H
+#ifndef PROCENVIRONMENT_ARCHIVEOBJECT
+#define PROCENVIRONMENT_ARCHIVEOBJECT
 
 /* ----------------------------------------------------------------------
  *  Apple API Headers
@@ -28,19 +28,17 @@
 /* ----------------------------------------------------------------------
  *  Environment API Headers
  * -------------------------------------------------------------------- */
-#import <LindChain/ProcEnvironment/Object/PEObject.h>
+#import <LindChain/ProcEnvironment/Object/FileObject.h>
 
-@interface FileObject : PEObject <NSSecureCoding>
+@interface ArchiveObject : FileObject
 
-@property (nonatomic) int fd;
+@property (nonatomic,strong) NSString *temporaryZipArchivePath;
 
-- (instancetype)initWithPath:(NSString*)path
-                   withFlags:(UInt32)flags;
-- (instancetype)initWithPath:(NSString*)path;
+- (instancetype)initWithDirectory:(NSString *)path;
+- (instancetype)initWithArchive:(NSString *)path;
 
-- (BOOL)writeOut:(NSString*)path;
-- (BOOL)writeIn:(NSString*)path;
+- (NSString*)extractArchive;
 
 @end
 
-#endif /* PROCENVIRONMENT_FILEOBJECT_H */
+#endif /* PROCENVIRONMENT_ARCHIVEOBJECT */

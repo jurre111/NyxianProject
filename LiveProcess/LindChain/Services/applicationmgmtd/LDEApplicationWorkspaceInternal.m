@@ -197,10 +197,9 @@ bool checkCodeSignature(const char* path);
     reply([[LDEApplicationWorkspaceInternal shared] deleteApplicationWithBundleID:bundleID]);
 }
 
-- (void)installApplicationAtBundlePath:(NSFileHandle*)bundleHandle withReply:(void (^)(BOOL))reply {
+- (void)installApplicationWithArchiveObject:(ArchiveObject*)archiveObject withReply:(void (^)(BOOL))reply {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString *tempBundle = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
-    unzipArchiveFromFileHandle(bundleHandle, tempBundle);
+    NSString *tempBundle = [archiveObject extractArchive];
     BOOL didInstall = [[LDEApplicationWorkspaceInternal shared] installApplicationWithPayloadPath:tempBundle];
     [fileManager removeItemAtPath:tempBundle error:nil];
     reply(didInstall);

@@ -17,13 +17,18 @@
  along with Nyxian. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef FD_MAP_OBJECT_H
-#define FD_MAP_OBJECT_H
+#ifndef PROCENVIRONMENT_FDMAPOBJECT_H
+#define PROCENVIRONMENT_FDMAPOBJECT_H
 
 /* ----------------------------------------------------------------------
  *  Apple API Headers
  * -------------------------------------------------------------------- */
 #import <Foundation/Foundation.h>
+
+/* ----------------------------------------------------------------------
+ *  Environment API Headers
+ * -------------------------------------------------------------------- */
+#import <LindChain/ProcEnvironment/Object/PEObject.h>
 
 /* ----------------------------------------------------------------------
  *  Class Declarations
@@ -37,7 +42,7 @@
     It is designed to be passed across XPC boundaries and supports
     NSSecureCoding for safe serialization.
  */
-@interface FDMapObject : NSObject <NSSecureCoding>
+@interface FDMapObject : PEObject <NSSecureCoding>
 
 /*!
  @property fd_map
@@ -98,4 +103,4 @@
 
 @end
 
-#endif /* FD_MAP_OBJECT_H */
+#endif /* PROCENVIRONMENT_FDMAPOBJECT_H */

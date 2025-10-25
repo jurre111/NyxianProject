@@ -82,8 +82,9 @@
     return nil;
 }
 
-- (void)dealloc
+- (void)deinit
 {
+    [super deinit];
     if(_port != MACH_PORT_NULL)
     {
         mach_port_deallocate(mach_task_self(), _port);

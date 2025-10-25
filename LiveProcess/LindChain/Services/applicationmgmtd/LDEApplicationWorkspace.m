@@ -20,6 +20,7 @@
 #import "LDEApplicationWorkspace.h"
 #import <LindChain/Private/FoundationPrivate.h>
 #import <LindChain/ProcEnvironment/Server/Server.h>
+#import <LindChain/ProcEnvironment/Object/ArchiveObject.h>
 #import <LindChain/Utils/Zip.h>
 #import <LindChain/Multitask/LDEProcessManager.h>
 #import <LindChain/LaunchServices/LaunchService.h>
@@ -39,11 +40,10 @@
 - (BOOL)installApplicationAtBundlePath:(NSString*)bundlePath
 {
     __block BOOL result = NO;
-    NSString *temporaryPackage = [NSString stringWithFormat:@"%@%@.ipa", NSTemporaryDirectory(), [[NSUUID UUID] UUIDString]];
-    zipDirectoryAtPath(bundlePath, temporaryPackage, YES);
+    ArchiveObject *archiveObject = [[ArchiveObject alloc] initWithDirectory:bundlePath];
     [[LaunchServices shared] execute:^(NSObject<LDEApplicationWorkspaceProxyProtocol> *remoteProxy){
         dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-        [remoteProxy installApplicationAtBundlePath:[NSFileHandle fileHandleForReadingAtPath:temporaryPackage] withReply:^(BOOL replyResult){
+        [remoteProxy installApplicationWithArchiveObject:archiveObject withReply:^(BOOL replyResult){
             result = replyResult;
             dispatch_semaphore_signal(sema);
         }];
@@ -57,7 +57,7 @@
     __block BOOL result = NO;
     [[LaunchServices shared] execute:^(NSObject<LDEApplicationWorkspaceProxyProtocol> *remoteProxy){
         dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-        [remoteProxy installApplicationAtBundlePath:[NSFileHandle fileHandleForReadingAtPath:packagePath] withReply:^(BOOL replyResult){
+        [remoteProxy installApplicationWithArchiveObject:[[ArchiveObject alloc] initWithArchive:packagePath] withReply:^(BOOL replyResult){
             result = replyResult;
             dispatch_semaphore_signal(sema);
         }];

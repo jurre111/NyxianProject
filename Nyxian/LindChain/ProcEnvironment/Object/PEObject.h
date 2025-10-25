@@ -17,30 +17,18 @@
  along with Nyxian. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PROCENVIRONMENT_FILEOBJECT_H
-#define PROCENVIRONMENT_FILEOBJECT_H
+#ifndef PROCENVIRONMENT_PEOBJECT_H
+#define PROCENVIRONMENT_PEOBJECT_H
 
 /* ----------------------------------------------------------------------
  *  Apple API Headers
  * -------------------------------------------------------------------- */
 #import <Foundation/Foundation.h>
 
-/* ----------------------------------------------------------------------
- *  Environment API Headers
- * -------------------------------------------------------------------- */
-#import <LindChain/ProcEnvironment/Object/PEObject.h>
+@interface PEObject : NSObject
 
-@interface FileObject : PEObject <NSSecureCoding>
-
-@property (nonatomic) int fd;
-
-- (instancetype)initWithPath:(NSString*)path
-                   withFlags:(UInt32)flags;
-- (instancetype)initWithPath:(NSString*)path;
-
-- (BOOL)writeOut:(NSString*)path;
-- (BOOL)writeIn:(NSString*)path;
+- (void)deinit;
 
 @end
 
-#endif /* PROCENVIRONMENT_FILEOBJECT_H */
+#endif /* PROCENVIRONMENT_PEOBJECT_H */

@@ -21,6 +21,11 @@
 #define PROCENVIRONMENT_TASKPORTOBJECT
 
 /* ----------------------------------------------------------------------
+ *  Apple API Headers
+ * -------------------------------------------------------------------- */
+#import <Foundation/Foundation.h>
+
+/* ----------------------------------------------------------------------
  *  Environment API Headers
  * -------------------------------------------------------------------- */
 #import <LindChain/ProcEnvironment/Object/MachPortObject.h>

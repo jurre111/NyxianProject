@@ -20,7 +20,14 @@
 #ifndef PROCENVIRONMENT_MACHOBJECT_H
 #define PROCENVIRONMENT_MACHOBJECT_H
 
+/* ----------------------------------------------------------------------
+ *  Apple API Headers
+ * -------------------------------------------------------------------- */
 #import <Foundation/Foundation.h>
+
+/* ----------------------------------------------------------------------
+ *  Environment API Headers
+ * -------------------------------------------------------------------- */
 #import <LindChain/ProcEnvironment/Object/FileObject.h>
 
 @interface MachOObject : FileObject

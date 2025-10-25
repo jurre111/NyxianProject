@@ -17,28 +17,20 @@
  along with Nyxian. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef PROCENVIRONMENT_MACHPORTOBJECT
-#define PROCENVIRONMENT_MACHPORTOBJECT
-
-/* ----------------------------------------------------------------------
- *  Apple API Headers
- * -------------------------------------------------------------------- */
-#import <Foundation/Foundation.h>
-#import <mach/mach.h>
-
-/* ----------------------------------------------------------------------
- *  Environment API Headers
- * -------------------------------------------------------------------- */
 #import <LindChain/ProcEnvironment/Object/PEObject.h>
 
-@interface MachPortObject : PEObject <NSSecureCoding>
+@implementation PEObject
 
-@property (nonatomic, readonly) mach_port_t port;
+- (void)deinit
+{
+    NSLog(@"Adios %@\n", self);
+    // Each object can have a other deinitilizer
+    // MARK: This is dont to be compatible with super calls on the deinitilizer
+}
 
-- (instancetype)initWithPort:(mach_port_t)port;
-
-- (BOOL)isUsable;
+- (void)dealloc
+{
+    [self deinit];
+}
 
 @end
-
-#endif /* PROCENVIRONMENT_MACHPORTOBJECT */

@@ -25,10 +25,16 @@
 @implementation FileObject
 
 - (instancetype)initWithPath:(NSString*)path
+                   withFlags:(UInt32)flags
 {
     self = [super init];
-    _fd = open([path UTF8String], O_RDWR);
+    _fd = open([path UTF8String], flags);
     return (_fd == -1) ? nil : self;
+}
+
+- (instancetype)initWithPath:(NSString*)path
+{
+    return [self initWithPath:path withFlags:O_RDWR];
 }
 
 - (BOOL)writeOut:(NSString *)path
@@ -161,8 +167,9 @@
     return self;
 }
 
-- (void)dealloc
+- (void)deinit
 {
+    [super deinit];
     close(_fd);
 }
 

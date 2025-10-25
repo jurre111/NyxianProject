@@ -21,6 +21,11 @@
 #define PROCENVIRONMENT_MAPPINGPORTOBJECT_H
 
 /* ----------------------------------------------------------------------
+ *  Apple API Headers
+ * -------------------------------------------------------------------- */
+#import <Foundation/Foundation.h>
+
+/* ----------------------------------------------------------------------
  *  Environment API Headers
  * -------------------------------------------------------------------- */
 #import <LindChain/ProcEnvironment/Object/MachPortObject.h>
