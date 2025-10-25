@@ -206,7 +206,6 @@ NSString* invokeAppMain(NSString *executablePath,
     SecItemGuestHooksInit();
     NSFMGuestHooksInit();
     UIKitGuestHooksInit();
-    StoreKitHooks_init();
     initDead10ccFix();
     DyldHooksInit();
 

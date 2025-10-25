@@ -24,9 +24,9 @@
 - (void)hook_setDelegate:(id<UIApplicationDelegate>)delegate {
     if(![delegate respondsToSelector:@selector(application:configurationForConnectingSceneSession:options:)]) {
         // Fix old apps black screen when UIApplicationSupportsMultipleScenes is YES
-        [ObjCSwizzler replaceInstanceAction:@selector(makeKeyAndVisible) ofClass:UIWindow.class withAction:@selector(hook_makeKeyAndVisible)];
-        [ObjCSwizzler replaceInstanceAction:@selector(makeKeyWindow) ofClass:UIWindow.class withAction:@selector(hook_makeKeyWindow)];
-        [ObjCSwizzler replaceInstanceAction:@selector(setHidden:) ofClass:UIWindow.class withAction:@selector(hook_setHidden:)];
+        swizzle_objc_method(@selector(makeKeyAndVisible), [UIWindow class], @selector(hook_makeKeyAndVisible), nil);
+        swizzle_objc_method(@selector(makeKeyWindow), [UIWindow class], @selector(hook_makeKeyWindow), nil);
+        swizzle_objc_method(@selector(setHidden:), [UIWindow class], @selector(hook_setHidden:), nil);
     }
     [self hook_setDelegate:delegate];
 }
@@ -106,17 +106,17 @@ void UIKitGuestHooksInit(void)
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        [ObjCSwizzler replaceInstanceAction:@selector(_connectUISceneFromFBSScene:transitionContext:) ofClass:UIApplication.class withAction:@selector(hook__connectUISceneFromFBSScene:transitionContext:)];
-        [ObjCSwizzler replaceInstanceAction:@selector(setDelegate:) ofClass:UIApplication.class withAction:@selector(hook_setDelegate:)];
-        [ObjCSwizzler replaceInstanceAction:@selector(__supportedInterfaceOrientations) ofClass:UIViewController.class withAction:@selector(hook___supportedInterfaceOrientations)];
-        [ObjCSwizzler replaceInstanceAction:@selector(shouldAutorotateToInterfaceOrientation:) ofClass:UIViewController.class withAction:@selector(hook_shouldAutorotateToInterfaceOrientation:)];
-        [ObjCSwizzler replaceInstanceAction:@selector(setAutorotates:forceUpdateInterfaceOrientation:) ofClass:UIWindow.class withAction:@selector(hook_setAutorotates:forceUpdateInterfaceOrientation:)];
+        swizzle_objc_method(@selector(_connectUISceneFromFBSScene:transitionContext:), [UIApplication class], @selector(hook__connectUISceneFromFBSScene:transitionContext:), nil);
+        swizzle_objc_method(@selector(setDelegate:), [UIApplication class], @selector(hook_setDelegate:), nil);
+        swizzle_objc_method(@selector(__supportedInterfaceOrientations), [UIViewController class], @selector(hook___supportedInterfaceOrientations), nil);
+        swizzle_objc_method(@selector(shouldAutorotateToInterfaceOrientation:), [UIViewController class], @selector(hook_shouldAutorotateToInterfaceOrientation:), nil);
+        swizzle_objc_method(@selector(setAutorotates:forceUpdateInterfaceOrientation:), [UIWindow class], @selector(hook_setAutorotates:forceUpdateInterfaceOrientation:), nil);
         
         Class class = NSClassFromString(@"GridTableCell");
         if(class)
         {
             NSLog(@"Fixing CocoaTop!");
-            [ObjCSwizzler replaceInstanceAction:@selector(configureWithId:columns:size:) ofClass:class withAction:@selector(hook_configureWithId:columns:size:) ofClass:GridTableCell2.class];
+            swizzle_objc_method(@selector(configureWithId:columns:size:), class, @selector(hook_configureWithId:columns:size:), [GridTableCell2 class]);
         }
     });
 }

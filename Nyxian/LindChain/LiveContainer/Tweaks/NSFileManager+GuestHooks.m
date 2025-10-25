@@ -23,7 +23,9 @@
 #import <LindChain/Utils/Swizzle.h>
 
 // NSFileManager simulate app group
-NSURL *hook_containerURLForSecurityApplicationGroupIdentifier(id self, SEL _cmd, NSString *groupIdentifier)
+@implementation NSFileManager (LiveContainer)
+
+- (NSURL*)hook_containerURLForSecurityApplicationGroupIdentifier:(NSString *)groupIdentifier
 {
     NSURL *result;
     result = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%s/Documents/AppGroup/%@", getenv("LC_HOME_PATH"), groupIdentifier]];
@@ -31,11 +33,11 @@ NSURL *hook_containerURLForSecurityApplicationGroupIdentifier(id self, SEL _cmd,
     return result;
 }
 
+@end
+
 void NSFMGuestHooksInit(void) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        [ObjCSwizzler replaceInstanceAction:@selector(containerURLForSecurityApplicationGroupIdentifier:)
-                                    ofClass:NSFileManager.class
-                                 withSymbol:hook_containerURLForSecurityApplicationGroupIdentifier];
+        swizzle_objc_method(@selector(containerURLForSecurityApplicationGroupIdentifier:), [NSFileManager class], @selector(hook_containerURLForSecurityApplicationGroupIdentifier:), nil);
     });
 }

@@ -124,7 +124,6 @@
 				"LindChain/LiveContainer/Tweaks/NSFileManager+GuestHooks.m",
 				LindChain/LiveContainer/Tweaks/NSUserDefaults.m,
 				LindChain/LiveContainer/Tweaks/SecItem.m,
-				LindChain/LiveContainer/Tweaks/StoreKitHooks.m,
 				"LindChain/LiveContainer/Tweaks/UIKit+GuestHooksInit.m",
 				LindChain/LiveContainer/utils.m,
 				LindChain/LLVM.xcframework,

@@ -37,10 +37,10 @@ void NUDGuestHooksInit(void)
         appContainerPath = [NSString stringWithUTF8String:getenv("HOME")];
         appContainerURL = [NSURL URLWithString:appContainerPath];
         
-        [ObjCSwizzler replaceInstanceAction:@selector(initWithDomain:user:byHost:containerPath:containingPreferences:)
-                                    ofClass:NSClassFromString(@"CFPrefsPlistSource")
-                                 withAction:@selector(hook_initWithDomain:user:byHost:containerPath:containingPreferences:)
-                                    ofClass:CFPrefsPlistSource2.class];
+        swizzle_objc_method(@selector(initWithDomain:user:byHost:containerPath:containingPreferences:),
+                            NSClassFromString(@"CFPrefsPlistSource"),
+                            @selector(hook_initWithDomain:user:byHost:containerPath:containingPreferences:),
+                            [CFPrefsPlistSource2 class]);
         
         Class CFXPreferencesClass = NSClassFromString(@"_CFXPreferences");
         NSMutableDictionary* sources = object_getIvar([CFXPreferencesClass copyDefaultPreferences], class_getInstanceVariable(CFXPreferencesClass, "_sources"));

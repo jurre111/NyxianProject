@@ -70,8 +70,8 @@ void environment_application_init(void)
     {
         // MARK: GUEST Init
         // MARK: Hooking _run of UIApplication class seems more reliable
-        [ObjCSwizzler replaceInstanceAction:@selector(_run) ofClass:UIApplication.class withAction:@selector(hook_run)];
-        [ObjCSwizzler replaceInstanceAction:@selector(setActive:error:) ofClass:AVAudioSession.class withAction:@selector(hook_setActive:error:)];
-        [ObjCSwizzler replaceInstanceAction:@selector(setActive:withOptions:error:) ofClass:AVAudioSession.class withAction:@selector(hook_setActive:withOptions:error:)];
+        swizzle_objc_method(@selector(_run), [UIApplication class], @selector(hook_run), nil);
+        swizzle_objc_method(@selector(setActive:error:), [UIApplication class], @selector(hook_setActive:error:), nil);
+        swizzle_objc_method(@selector(setActive:withOptions:error:), [AVAudioSession class], @selector(hook_setActive:withOptions:error:), nil);
     }
 }
