@@ -42,11 +42,10 @@ extern uint32_t gRebindCount;
 extern global_rebind *gRebinds;
 
 #define DEFINE_HOOK(func, return_type, signature) \
-    static return_type (*orig_##func)signature; \
+    static return_type (*orig_##func)signature = (return_type (*) signature)func; \
     static return_type hook_##func signature
 
 #define DO_HOOK(func, type) \
-    orig_##func = func; \
     litehook_rebind_symbol(type, func, hook_##func, nil);
 
 #define DO_HOOK_GLOBAL(func) \
