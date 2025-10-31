@@ -198,16 +198,20 @@ import UniformTypeIdentifiers
                 guard let self = self else { return }
                 buildProjectWithArgumentUI(targetViewController: self, project: project, buildType: .RunningApp)
             }))
-            projectMenuElements.append(UIAction(title: "Export", image: UIImage(systemName: "archivebox.fill"), handler: { [weak self] _ in
-                guard let self = self else { return }
-                buildProjectWithArgumentUI(targetViewController: self, project: project, buildType: .InstallPackagedApp)
-            }))
-            projectMenuElements.append(UIAction(title: "Issue Navigator", image: UIImage(systemName: "exclamationmark.triangle.fill"), handler: { [weak self] _ in
-                guard let self = self else { return }
-                let loggerView = UINavigationController(rootViewController: UIDebugViewController(project: project))
-                loggerView.modalPresentationStyle = .formSheet
-                self.present(loggerView, animated: true)
-            }))
+            if project.projectConfig.type == NXProjectType.app.rawValue {
+                projectMenuElements.append(UIAction(title: "Export", image: UIImage(systemName: "archivebox.fill"), handler: { [weak self] _ in
+                    guard let self = self else { return }
+                    buildProjectWithArgumentUI(targetViewController: self, project: project, buildType: .InstallPackagedApp)
+                }))
+            }
+            if project.projectConfig.type == NXProjectType.app.rawValue || project.projectConfig.type == NXProjectType.utility.rawValue {
+                projectMenuElements.append(UIAction(title: "Issue Navigator", image: UIImage(systemName: "exclamationmark.triangle.fill"), handler: { [weak self] _ in
+                    guard let self = self else { return }
+                    let loggerView = UINavigationController(rootViewController: UIDebugViewController(project: project))
+                    loggerView.modalPresentationStyle = .formSheet
+                    self.present(loggerView, animated: true)
+                }))
+            }
             
             rootMenuChildren.append({
                 if #available(iOS 17.0, *) {
