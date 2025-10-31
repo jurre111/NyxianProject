@@ -150,7 +150,7 @@
         [plistData writeToFile:[NSString stringWithFormat:@"%@%@", projectPath, key] atomically:YES];
     }
     
-    [[NXCodeTemplate shared] generateCodeStructureFromTemplateScheme:NXCodeTemplateSchemeObjCApp withProjectName:name intoPath:projectPath];
+    [[NXCodeTemplate shared] generateCodeStructureFromTemplateScheme:NXCodeTemplateSchemeApp withLanguage:NXCodeTemplateLanguageObjC withProjectName:name intoPath:projectPath];
     
     return [[NXProject alloc] initWithPath:projectPath];
 }

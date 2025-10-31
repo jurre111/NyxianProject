@@ -37,14 +37,15 @@
 }
 
 - (void)generateCodeStructureFromTemplateScheme:(NXCodeTemplateScheme)scheme
+                                   withLanguage:(NXCodeTemplateLanguage)language
                                 withProjectName:(NSString*)projectName
-                                      intoPath:(NSString*)path
+                                       intoPath:(NSString*)path
 {
     NSFileManager *defaultManager = [NSFileManager defaultManager];
     if(![defaultManager fileExistsAtPath:path])
         return;
     [NXUser shared].projectName = projectName;
-    NSString *templatePath = [NSString stringWithFormat:@"%@/Shared/Templates/%@", [[NSBundle mainBundle] bundlePath], scheme];
+    NSString *templatePath = [[[NSString stringWithFormat:@"%@/Shared/Templates", [[NSBundle mainBundle] bundlePath]] stringByAppendingPathComponent:scheme] stringByAppendingPathComponent:language];
     
     NSError *error = NULL;
     NSArray *folderEntries = [defaultManager contentsOfDirectoryAtPath:templatePath error:&error];

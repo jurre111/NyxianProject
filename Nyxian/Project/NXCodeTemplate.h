@@ -20,11 +20,18 @@
 #import <Foundation/Foundation.h>
 
 typedef NSString * NXCodeTemplateScheme NS_TYPED_ENUM;
-static NXCodeTemplateScheme const NXCodeTemplateSchemeObjCApp = @"Application/ObjC";
+static NXCodeTemplateScheme const NXCodeTemplateSchemeApp = @"Application";
+static NXCodeTemplateScheme const NXCodeTemplateSchemeUtility = @"Utility";
+
+typedef NSString * NXCodeTemplateLanguage NS_TYPED_ENUM;
+static NXCodeTemplateLanguage const NXCodeTemplateLanguageSelf = @"Self";       /* For types that are based on it self */
+static NXCodeTemplateLanguage const NXCodeTemplateLanguageObjC = @"ObjC";
+static NXCodeTemplateLanguage const NXCodeTemplateLanguageC = @"C";
 
 @interface NXCodeTemplate : NSObject
 
 - (void)generateCodeStructureFromTemplateScheme:(NXCodeTemplateScheme)scheme
+                                   withLanguage:(NXCodeTemplateLanguage)language
                                 withProjectName:(NSString*)projectName
                                        intoPath:(NSString*)path;
 + (NXCodeTemplate*)shared;
