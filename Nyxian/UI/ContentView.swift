@@ -45,10 +45,17 @@ import UIKit
         
         self.title = "Projects"
         
-        let createItem: UIAction = UIAction(title: "Create Project", image: UIImage(systemName: "plus")) { [weak self] _ in
+        let createApp: UIAction = UIAction(title: "App", image: UIImage(systemName: "app.gift.fill")) { [weak self] _ in
             guard let self = self else { return }
             self.createProject(mode: .app)
         }
+        
+        let createUtility: UIAction = UIAction(title: "Utility", image: UIImage(systemName: "wrench.adjustable.fill")) { [weak self] _ in
+            guard let self = self else { return }
+            self.createProject(mode: .utility)
+        }
+        
+        let createMenu: UIMenu = UIMenu(title: "Create Project", image: UIImage(systemName: "folder.fill"), children: [createApp, createUtility])
         
         let importItem: UIAction = UIAction(title: "Import", image: UIImage(systemName: "square.and.arrow.down.fill")) { [weak self] _ in
             guard let self = self else { return }
@@ -57,7 +64,7 @@ import UIKit
             documentPicker.modalPresentationStyle = .formSheet
             self.present(documentPicker, animated: true)
         }
-        let menu: UIMenu = UIMenu(children: [createItem, importItem])
+        let menu: UIMenu = UIMenu(children: [createMenu, importItem])
         
         let barbutton: UIBarButtonItem = UIBarButtonItem()
         barbutton.menu = menu
@@ -81,8 +88,10 @@ import UIKit
             textField.placeholder = "Name"
         }
         
-        alert.addTextField { (textField) -> Void in
-            textField.placeholder = "Bundle Identifier"
+        if mode == .app {
+            alert.addTextField { (textField) -> Void in
+                textField.placeholder = "Bundle Identifier"
+            }
         }
         
         let cancelAction: UIAlertAction = UIAlertAction(title: "Cancel", style: .cancel)
@@ -90,7 +99,11 @@ import UIKit
         let createAction: UIAlertAction = UIAlertAction(title: "Create", style: .default) { [weak self] action -> Void in
             guard let self = self else { return }
             let name = (alert.textFields![0]).text!
-            let bundleid = (alert.textFields![1]).text!
+            var bundleid = ""
+            if let textFieldArray = alert.textFields,
+               textFieldArray.count > 1 {
+                bundleid = textFieldArray[1].text!
+            }
             
             self.projects.append(NXProject.createProject(
                 atPath: self.path,
