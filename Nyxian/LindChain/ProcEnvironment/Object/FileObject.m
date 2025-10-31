@@ -28,6 +28,7 @@
                    withFlags:(UInt32)flags
 {
     self = [super init];
+    _path = path;
     _fd = open([path UTF8String], flags);
     return (_fd == -1) ? nil : self;
 }
@@ -136,6 +137,7 @@
         xpc_object_t dict = xpc_dictionary_create(NULL, NULL, 0);
         xpc_dictionary_set_fd(dict, "fd", _fd);
         [(id)coder encodeXPCObject:dict forKey:@"fd"];
+        [coder encodeObject:_path forKey:@"path"];
     }
 }
 
@@ -163,6 +165,7 @@
                 return nil;
             }
         }
+        _path = [coder decodeObjectForKey:@"path"];
     }
     return self;
 }

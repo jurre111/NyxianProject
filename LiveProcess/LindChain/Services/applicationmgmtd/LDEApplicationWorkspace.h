@@ -35,6 +35,7 @@
 - (LDEApplicationObject*)applicationObjectForBundleID:(NSString*)bundleID;
 - (NSArray<LDEApplicationObject*>*)allApplicationObjects;
 - (BOOL)clearContainerForBundleID:(NSString*)bundleID;
+- (NSString*)fastpathUtility:(NSString*)utilityPath;
 
 @end
 

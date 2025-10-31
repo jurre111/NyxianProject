@@ -136,4 +136,18 @@
     return result;
 }
 
+- (NSString*)fastpathUtility:(NSString*)utilityPath
+{
+    __block NSString *fastpath = nil;
+    [[LaunchServices shared] execute:^(NSObject<LDEApplicationWorkspaceProxyProtocol> *remoteProxy){
+        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+        [remoteProxy fastpathUtility:[[FileObject alloc] initWithPath:utilityPath] withReply:^(NSString *fastPathRet, BOOL fastSigned){
+            fastpath = fastSigned ? fastPathRet : nil;
+            dispatch_semaphore_signal(sema);
+        }];
+        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+    } byEstablishingConnectionToServiceWithServiceIdentifier:@"com.cr4zy.appmanagementd" compliantToProtocol:@protocol(LDEApplicationWorkspaceProxyProtocol)];
+    return fastpath;
+}
+
 @end

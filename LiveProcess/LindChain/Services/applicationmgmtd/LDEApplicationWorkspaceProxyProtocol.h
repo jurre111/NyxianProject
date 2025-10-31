@@ -32,6 +32,7 @@
 - (void)applicationContainerForBundleID:(NSString*)bundleID withReply:(void (^)(NSURL*))reply;
 - (void)allApplicationObjectsWithReply:(void (^)(LDEApplicationObjectArray *))reply;
 - (void)clearContainerForBundleID:(NSString*)bundleID withReply:(void (^)(BOOL))reply;
+- (void)fastpathUtility:(FileObject*)object withReply:(void (^)(NSString*,BOOL))reply;
 
 @end
 

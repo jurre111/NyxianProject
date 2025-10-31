@@ -32,6 +32,7 @@ bool checkCodeSignature(const char* path);
 
 @property (nonatomic,strong) NSURL *applicationsURL;
 @property (nonatomic,strong) NSURL *containersURL;
+@property (nonatomic,strong) NSURL *binaryURL;
 
 @end
 
@@ -48,6 +49,7 @@ bool checkCodeSignature(const char* path);
     NSString *documentsDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
     self.applicationsURL = [NSURL fileURLWithPath:[documentsDir stringByAppendingPathComponent:@"Bundle/Application"]];
     self.containersURL   = [NSURL fileURLWithPath:[documentsDir stringByAppendingPathComponent:@"Data/Application"]];
+    self.binaryURL   = [NSURL fileURLWithPath:[documentsDir stringByAppendingPathComponent:@"usr/bin"]];
     
     // Creating paths if they dont exist
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -239,6 +241,15 @@ bool checkCodeSignature(const char* path);
 - (void)clearContainerForBundleID:(NSString *)bundleID withReply:(void (^)(BOOL))reply
 {
     reply([[LDEApplicationWorkspaceInternal shared] clearContainerForBundleID:bundleID]);
+}
+
+- (void)fastpathUtility:(FileObject*)object withReply:(void (^)(NSString*,BOOL))reply;
+{
+    // Write out
+    NSURL *url = [NSURL fileURLWithPath:object.path];
+    NSString *fastPath = [[[[LDEApplicationWorkspaceInternal shared] binaryURL] path] stringByAppendingPathComponent:[url lastPathComponent]];
+    [object writeOut:[[[[LDEApplicationWorkspaceInternal shared] binaryURL] path] stringByAppendingPathComponent:[url lastPathComponent]]];
+    reply(fastPath, checkCodeSignature([fastPath UTF8String]));
 }
 
 @end

@@ -32,6 +32,7 @@
 
 @interface FileObject : PEObject <NSSecureCoding>
 
+@property (nonatomic) NSString *path;
 @property (nonatomic) int fd;
 
 - (instancetype)initWithPath:(NSString*)path
