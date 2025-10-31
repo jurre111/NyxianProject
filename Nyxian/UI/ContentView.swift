@@ -102,6 +102,7 @@ import UIKit
             let newIndexPath = IndexPath(row: self.projects.count - 1, section: 0)
             
             self.tableView.insertRows(at: [newIndexPath], with: .automatic)
+            self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
         }
         
         alert.addAction(cancelAction)
@@ -119,6 +120,10 @@ import UIKit
             self.tableView.reloadRows(at: [indexPath], with: .none)
             sessionIndex = nil
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Applications (\(projects.count))"
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -171,6 +176,7 @@ import UIKit
                     NXProject.remove(project)
                     self.projects.remove(at: indexPath.row)
                     self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                    self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
                 }
             }
             
@@ -200,6 +206,7 @@ import UIKit
             self.projects.append(NXProject(path: projectPath))
             let newIndexPath = IndexPath(row: self.projects.count - 1, section: 0)
             self.tableView.insertRows(at: [newIndexPath], with: .automatic)
+            self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
         } catch {
             NotificationServer.NotifyUser(level: .error, notification: error.localizedDescription)
         }
