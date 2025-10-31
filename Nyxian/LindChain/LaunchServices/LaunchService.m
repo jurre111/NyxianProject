@@ -44,7 +44,6 @@
     
     NSMutableDictionary *mutableDictionary = [_dictionary mutableCopy];
     [mutableDictionary setObject:[Server getTicket] forKey:@"LSEndpoint"];
-    [mutableDictionary setObject:[FDMapObject currentMap] forKey:@"LSFDMapObject"];
     
     pid_t pid = [[LDEProcessManager shared] spawnProcessWithItems:[mutableDictionary copy] withConfiguration:[[LDEProcessConfiguration alloc] initWithParentProcessIdentifier:getpid() withUserIdentifier:userIdentifier withGroupIdentifier:groupIdentifier withEntitlements:PEEntitlementDefaultSystemApplication]];
     if(pid == 0) [self ignition];

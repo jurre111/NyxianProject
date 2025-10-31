@@ -23,7 +23,6 @@
 
 - (void)deinit
 {
-    NSLog(@"Adios %@\n", self);
     // Each object can have a other deinitilizer
     // MARK: This is dont to be compatible with super calls on the deinitilizer
 }

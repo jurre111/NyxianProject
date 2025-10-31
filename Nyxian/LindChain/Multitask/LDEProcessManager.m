@@ -149,14 +149,20 @@
                withMapObject:(FDMapObject*)mapObject
            withConfiguration:(LDEProcessConfiguration*)configuration
 {
-    self = [self initWithItems:@{
+    NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithDictionary:@{
         @"LSEndpoint": [Server getTicket],
         @"LSServiceMode": @"spawn",
         @"LSExecutablePath": binaryPath,
         @"LSArguments": arguments,
-        @"LSEnvironment": environment,
-        @"LSMapObject": mapObject
-    } withConfiguration:configuration];
+        @"LSEnvironment": environment
+    }];
+    
+    if(mapObject != nil)
+    {
+        [dictionary setObject:mapObject forKey:@"LSMapObject"];
+    }
+    
+    self = [self initWithItems:[dictionary copy] withConfiguration:configuration];
     
     return self;
 }
@@ -312,12 +318,10 @@
         }
     }
     
-    FDMapObject *mapObject = [FDMapObject currentMap];
-    
     LDEProcess *process = nil;
     pid_t pid = [self spawnProcessWithPath:applicationObject.executablePath withArguments:@[applicationObject.executablePath] withEnvironmentVariables:@{
         @"HOME": applicationObject.containerPath
-    } withMapObject:mapObject withConfiguration:configuration process:&process];
+    } withMapObject:nil withConfiguration:configuration process:&process];
     process.bundleIdentifier = applicationObject.bundleIdentifier;
     return pid;
 }
