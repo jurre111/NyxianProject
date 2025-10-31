@@ -122,26 +122,65 @@
     for(NSString *directory in directoryList)
         [defaultFileManager createDirectoryAtPath:[NSString stringWithFormat:@"%@%@", projectPath, directory] withIntermediateDirectories:NO attributes:NULL error:nil];
     
-    NSDictionary *plistList = @{
-        @"/Config/Project.plist": @{
-            @"LDEExecutable": name,
-            @"LDEDisplayName": name,
-            @"LDEBundleIdentifier": bundleid,
-            @"LDEBundleInfo": @{},
-            @"LDEBundleVersion": @"1.0",
-            @"LDEBundleShortVersion": @"1.0",
-            @"LDEProjectType": @(type),
-            @"LDEMinimumVersion": [[UIDevice currentDevice] systemVersion],
-            @"LDECompilerFlags": @[@"-fobjc-arc"],
-            @"LDELinkerFlags": @[@"-ObjC", @"-lc", @"-lc++", @"-framework", @"Foundation", @"-framework", @"UIKit"] },
-        @"/Config/Editor.plist": @{
-            @"LDEShowLines": @(YES),
-            @"LDEShowSpace": @(YES),
-            @"LDEShowReturn": @(YES),
-            @"LDEWrapLine": @(YES),
-            @"LDEFontSize": @(10.0)
-        }
-    };
+    NSDictionary *plistList = nil;
+    
+    switch(type)
+    {
+        case NXProjectTypeApp:
+            plistList = @{
+                @"/Config/Project.plist": @{
+                    @"LDEExecutable": name,
+                    @"LDEDisplayName": name,
+                    @"LDEBundleIdentifier": bundleid,
+                    @"LDEBundleInfo": @{},
+                    @"LDEBundleVersion": @"1.0",
+                    @"LDEBundleShortVersion": @"1.0",
+                    @"LDEProjectType": @(type),
+                    @"LDEMinimumVersion": [[UIDevice currentDevice] systemVersion],
+                    @"LDECompilerFlags": @[@"-fobjc-arc"],
+                    @"LDELinkerFlags": @[@"-ObjC", @"-lc", @"-lc++", @"-framework", @"Foundation", @"-framework", @"UIKit"]
+                },
+                @"/Config/Editor.plist": @{
+                    @"LDEShowLines": @(YES),
+                    @"LDEShowSpace": @(YES),
+                    @"LDEShowReturn": @(YES),
+                    @"LDEWrapLine": @(YES),
+                    @"LDEFontSize": @(10.0)
+                }
+            };
+            break;
+        case NXProjectTypeUtility:
+            plistList = @{
+                @"/Config/Project.plist": @{
+                    @"LDEExecutable": name,
+                    @"LDEDisplayName": name,
+                    @"LDEProjectType": @(type)
+                },
+                @"/Config/Editor.plist": @{
+                    @"LDEShowLines": @(YES),
+                    @"LDEShowSpace": @(YES),
+                    @"LDEShowReturn": @(YES),
+                    @"LDEWrapLine": @(YES),
+                    @"LDEFontSize": @(10.0)
+                }
+            };
+            break;
+        default:
+            plistList = @{
+                @"/Config/Project.plist": @{
+                    @"LDEDisplayName": name,
+                    @"LDEProjectType": @(type)
+                },
+                @"/Config/Editor.plist": @{
+                    @"LDEShowLines": @(YES),
+                    @"LDEShowSpace": @(YES),
+                    @"LDEShowReturn": @(YES),
+                    @"LDEWrapLine": @(YES),
+                    @"LDEFontSize": @(10.0)
+                }
+            };
+            break;
+    }
     
     for(NSString *key in plistList)
     {
@@ -150,7 +189,17 @@
         [plistData writeToFile:[NSString stringWithFormat:@"%@%@", projectPath, key] atomically:YES];
     }
     
-    [[NXCodeTemplate shared] generateCodeStructureFromTemplateScheme:NXCodeTemplateSchemeApp withLanguage:NXCodeTemplateLanguageObjC withProjectName:name intoPath:projectPath];
+    switch(type)
+    {
+        case NXProjectTypeApp:
+            [[NXCodeTemplate shared] generateCodeStructureFromTemplateScheme:NXCodeTemplateSchemeApp withLanguage:NXCodeTemplateLanguageObjC withProjectName:name intoPath:projectPath];
+            break;
+        case NXProjectTypeUtility:
+            [[NXCodeTemplate shared] generateCodeStructureFromTemplateScheme:NXCodeTemplateSchemeUtility withLanguage:NXCodeTemplateLanguageC withProjectName:name intoPath:projectPath];
+            break;
+        default:
+            break;
+    }
     
     return [[NXProject alloc] initWithPath:projectPath];
 }
