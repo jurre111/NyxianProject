@@ -72,11 +72,13 @@ class CustomizationViewController: UIThemedTableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            return 2;
+            return 2
+        case 1:
+            return 7
         case 2:
-            return self.icons.count;
+            return self.icons.count
         default:
-            return 2;
+            return 2
         }
     }
     
@@ -106,12 +108,22 @@ int main(void)
 \treturn 0;
 }
 """))
-            } else {
+            } else if indexPath.row == 1 {
                 cell = PickerTableCell(options: ["NyxianLDE", "Solarized"], title: "Theme", key: "LDETheme", defaultValue: 0)
                 (cell as! PickerTableCell).callback = { selected in
                     self.themePreviewCell!.switchTheme(theme: themes[selected])
                     RevertUI()
                 }
+            } else if indexPath.row == 2 {
+                cell = StepperTableCell(title: "Font Size", key: "LDEFontSize", defaultValue: 10, minValue: 8, maxValue: 15)
+            } else if indexPath.row == 3 {
+                cell = SwitchTableCell(title: "Show Line Numbers", key: "LDEShowLineNumbers", defaultValue: true)
+            } else if indexPath.row == 4 {
+                cell = SwitchTableCell(title: "Show Spaces", key: "LDEShowSpaces", defaultValue: true)
+            } else if indexPath.row == 5 {
+                cell = SwitchTableCell(title: "Wrap Lines", key: "LDEWrapLines", defaultValue: true)
+            } else {
+                cell = SwitchTableCell(title: "Show Line Breaks", key: "LDEShowLineBreaks", defaultValue: true)
             }
         } else {
             cell = UITableViewCell(style: .default, reuseIdentifier: nil)

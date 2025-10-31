@@ -55,24 +55,10 @@ static NXProjectType const NXProjectTypeWeb = 6;        /* Not implemented yet *
 
 @end
 
-@interface NXCodeEditorConfig : NXPlistHelper
-
-@property (nonatomic,readonly) BOOL showLine;
-@property (nonatomic,readonly) BOOL showSpaces;
-@property (nonatomic,readonly) BOOL showReturn;
-@property (nonatomic,readonly) BOOL wrapLine;
-@property (nonatomic,readonly) double fontSize;
-
-// NONE PUBLIC FEATURES - NOT READY FOR PUBLIC
-@property (nonatomic,readonly) BOOL autocompletion;
-
-@end
-
 @interface NXProject : NSObject
 
 //@property (nonatomic,strong,readonly) UITableViewCell *tableCell;
 @property (nonatomic,strong,readonly) NXProjectConfig *projectConfig;
-@property (nonatomic,strong,readonly) NXCodeEditorConfig *codeEditorConfig;
 
 @property (nonatomic,strong,readonly) NSString *path;
 @property (nonatomic,strong,readonly) NSString *cachePath;

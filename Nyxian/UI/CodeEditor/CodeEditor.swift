@@ -47,7 +47,6 @@ class CodeEditorViewController: UIViewController {
         self.textView = TextView()
         
         self.project = project
-        self.project?.codeEditorConfig.reloadIfNeeded()
         self.line = line
         self.column = column
         
@@ -111,7 +110,7 @@ class CodeEditorViewController: UIViewController {
         }
         
         let theme: LindDEThemer = currentTheme ?? LindDEThemer()
-        theme.fontSize = CGFloat(self.project?.codeEditorConfig.fontSize ?? 10.0)
+        theme.fontSize = UserDefaults.standard.object(forKey: "LDEFontSize") == nil ? 10.0 : CGFloat(UserDefaults.standard.integer(forKey: "LDEFontSize"))
             
         self.view.backgroundColor = .systemBackground
         self.textView.backgroundColor = theme.backgroundColor
@@ -121,10 +120,17 @@ class CodeEditorViewController: UIViewController {
         self.navigationController?.navigationBar.standardAppearance = currentNavigationBarAppearance
         self.navigationController?.navigationBar.scrollEdgeAppearance = currentNavigationBarAppearance
         
-        self.textView.showLineNumbers = self.project?.codeEditorConfig.showLine ?? true
-        self.textView.showSpaces = self.project?.codeEditorConfig.showSpaces  ?? true
-        self.textView.isLineWrappingEnabled = self.project?.codeEditorConfig.wrapLine  ?? true
-        self.textView.showLineBreaks = self.project?.codeEditorConfig.showReturn  ?? true
+        func booleanDefaults(key: String, defaultValue: Bool) -> Bool {
+            if UserDefaults.standard.object(forKey: key) == nil {
+                return defaultValue
+            }
+            return UserDefaults.standard.bool(forKey: key)
+        }
+        
+        self.textView.showLineNumbers = booleanDefaults(key: "LDEShowLineNumbers", defaultValue: true)
+        self.textView.showSpaces = booleanDefaults(key: "LDEShowSpaces", defaultValue: true)
+        self.textView.isLineWrappingEnabled = booleanDefaults(key: "LDEWrapLines", defaultValue: true)
+        self.textView.showLineBreaks = booleanDefaults(key: "LDEShowLineBreaks", defaultValue: true)
         self.textView.lineSelectionDisplayType = .line
         
         self.textView.lineHeightMultiplier = 1.3

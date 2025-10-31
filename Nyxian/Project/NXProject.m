@@ -77,23 +77,6 @@
 
 @end
 
-@implementation NXCodeEditorConfig
-
-- (BOOL)showLine { return [self readBooleanForKey:@"LDEShowLines" withDefaultValue:YES]; }
-- (BOOL)showSpaces { return [self readBooleanForKey:@"LDEShowSpace" withDefaultValue:YES]; }
-- (BOOL)showReturn { return [self readBooleanForKey:@"LDEShowReturn" withDefaultValue:YES]; }
-- (BOOL)wrapLine { return [self readBooleanForKey:@"LDEWrapLine" withDefaultValue:YES]; }
-- (double)fontSize { return [self readDoubleForKey:@"LDEFontSize" withDefaultValue:YES]; }
-
-// NONE PUBLIC FEATURES - NOT READY FOR PUBLIC
-- (BOOL)autocompletion
-{
-    NSNumber *value = [self readKey:@"LDEAutocompletion"];
-    return value ? value.boolValue : NO;
-}
-
-@end
-
 /*
  Project
  */
@@ -105,7 +88,6 @@
     _path = path;
     _cachePath = [[Bootstrap shared] bootstrapPath:[NSString stringWithFormat:@"/Cache/%@", [self uuid]]];
     _projectConfig = [[NXProjectConfig alloc] initWithPlistPath:[NSString stringWithFormat:@"%@/Config/Project.plist", self.path]];
-    _codeEditorConfig = [[NXCodeEditorConfig alloc] initWithPlistPath:[NSString stringWithFormat:@"%@/Config/Editor.plist", self.path]];
     return self;
 }
 
@@ -139,13 +121,6 @@
                     @"LDEMinimumVersion": [[UIDevice currentDevice] systemVersion],
                     @"LDECompilerFlags": @[@"-fobjc-arc"],
                     @"LDELinkerFlags": @[@"-ObjC", @"-lc", @"-lc++", @"-framework", @"Foundation", @"-framework", @"UIKit"]
-                },
-                @"/Config/Editor.plist": @{
-                    @"LDEShowLines": @(YES),
-                    @"LDEShowSpace": @(YES),
-                    @"LDEShowReturn": @(YES),
-                    @"LDEWrapLine": @(YES),
-                    @"LDEFontSize": @(10.0)
                 }
             };
             break;
@@ -157,13 +132,6 @@
                     @"LDEProjectType": @(type),
                     @"LDECompilerFlags": @[@"-fobjc-arc"],
                     @"LDELinkerFlags": @[@"-ObjC", @"-lc", @"-lc++", @"-framework", @"Foundation", @"-framework", @"UIKit"]
-                },
-                @"/Config/Editor.plist": @{
-                    @"LDEShowLines": @(YES),
-                    @"LDEShowSpace": @(YES),
-                    @"LDEShowReturn": @(YES),
-                    @"LDEWrapLine": @(YES),
-                    @"LDEFontSize": @(10.0)
                 }
             };
             break;
@@ -172,13 +140,6 @@
                 @"/Config/Project.plist": @{
                     @"LDEDisplayName": name,
                     @"LDEProjectType": @(type)
-                },
-                @"/Config/Editor.plist": @{
-                    @"LDEShowLines": @(YES),
-                    @"LDEShowSpace": @(YES),
-                    @"LDEShowReturn": @(YES),
-                    @"LDEWrapLine": @(YES),
-                    @"LDEFontSize": @(10.0)
                 }
             };
             break;
