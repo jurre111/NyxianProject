@@ -204,15 +204,40 @@
     return [[NXProject alloc] initWithPath:projectPath];
 }
 
-+ (NSMutableArray<NXProject*>*)listProjectsAtPath:(NSString*)path
++ (NSMutableDictionary<NSString*,NSMutableArray<NXProject*>*>*)listProjectsAtPath:(NSString*)path
 {
-    NSMutableArray<NXProject*> *projects = [[NSMutableArray alloc] init];
+    NSMutableDictionary<NSString*,NSMutableArray<NXProject*>*> *projectList = [[NSMutableDictionary alloc] init];
+    
+    NSMutableArray<NXProject*> *applicationProjects = [[NSMutableArray alloc] init];
+    NSMutableArray<NXProject*> *utilityProjects = [[NSMutableArray alloc] init];
+    NSMutableArray<NXProject*> *unknownProjects = [[NSMutableArray alloc] init];
+    
+    projectList[@"applications"] = applicationProjects;
+    projectList[@"utilities"] = utilityProjects;
+    projectList[@"unknown"] = unknownProjects;
+    
     NSError *error;
     NSArray *pathEntries = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:&error];
-    if(error) return projects;
+    if(error) return projectList;
     for(NSString *entry in pathEntries)
-        [projects addObject:[[NXProject alloc] initWithPath:[NSString stringWithFormat:@"%@/%@",path,entry]]];
-    return projects;
+    {
+        NXProject *project = [[NXProject alloc] initWithPath:[NSString stringWithFormat:@"%@/%@",path,entry]];
+        
+        if(project.projectConfig.type == NXProjectTypeApp)
+        {
+            [applicationProjects addObject:project];
+        }
+        else if(project.projectConfig.type == NXProjectTypeUtility)
+        {
+            [utilityProjects addObject:project];
+        }
+        else
+        {
+            [unknownProjects addObject:project];
+        }
+    }
+    
+    return projectList;
 }
 
 + (void)removeProject:(NXProject*)project

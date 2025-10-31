@@ -24,6 +24,7 @@
 #import <Project/NXPlistHelper.h>
 
 typedef int NXProjectType NS_TYPED_ENUM;
+static NXProjectType const NXProjectTypeAny = 0;
 static NXProjectType const NXProjectTypeApp = 1;
 static NXProjectType const NXProjectTypeUtility = 2;    /* Not implemented yet */
 static NXProjectType const NXProjectTypeLua = 3;        /* Not implemented yet */
@@ -90,7 +91,7 @@ static NXProjectType const NXProjectTypeWeb = 6;        /* Not implemented yet *
                          withName:(NSString*)name
              withBundleIdentifier:(NSString*)bundleid
                          withType:(NXProjectType)type;
-+ (NSMutableArray<NXProject*>*)listProjectsAtPath:(NSString*)path;
++ (NSMutableDictionary<NSString*,NSMutableArray<NXProject*>*>*)listProjectsAtPath:(NSString*)path;
 + (void)removeProject:(NXProject*)project;
 
 - (BOOL)reload;

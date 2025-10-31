@@ -22,7 +22,7 @@ import UIKit
 
 @objc class ContentViewController: UITableViewController, UIDocumentPickerDelegate, UIAdaptivePresentationControllerDelegate {
     var sessionIndex: IndexPath? = nil
-    var projects: [NXProject] = []
+    var projectsList: [String:[NXProject]] = [:]
     var path: String
     
     @objc init(path: String) {
@@ -74,9 +74,124 @@ import UIKit
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
         self.tableView.rowHeight = 70
         
-        self.projects = NXProject.listProjects(atPath: self.path) as! [NXProject]
+        let rawProjectsList = NXProject.listProjects(atPath: self.path) as! [String:[NXProject]]
+        let filtered = rawProjectsList.filter { !$0.value.isEmpty }
+
+        let sorted = filtered.sorted { a, b in
+            let keyA = a.key.lowercased()
+            let keyB = b.key.lowercased()
+            return sortKeys(keyA, keyB)
+        }
+
+        self.projectsList = Dictionary(uniqueKeysWithValues: sorted)
         
         self.tableView.reloadData()
+    }
+    
+    func addProject(_ project: NXProject) {
+        let type = NXProjectType(rawValue: project.projectConfig.type)
+        let key = {
+            switch type {
+            case .app: return "applications"
+            case .utility: return "utilities"
+            default: return "unknown"
+            }
+        }()
+        
+        let oldSections = projectsList.keys.sorted { sortKeys($0, $1) }
+        let oldSectionForKey = oldSections.firstIndex(of: key)
+        
+        if var list = self.projectsList[key] {
+            list.append(project)
+            self.projectsList[key] = list
+        } else {
+            self.projectsList[key] = [project]
+        }
+        
+        let newSections = updateSections()
+        let newSectionForKey = newSections.firstIndex(of: key)
+        
+        tableView.performBatchUpdates({
+            if let oldIndex = oldSectionForKey, let newIndex = newSectionForKey {
+                if oldIndex != newIndex {
+                    tableView.deleteSections(IndexSet(integer: oldIndex), with: .fade)
+                    tableView.insertSections(IndexSet(integer: newIndex), with: .fade)
+                }
+            } else if let newIndex = newSectionForKey {
+                tableView.insertSections(IndexSet(integer: newIndex), with: .fade)
+            }
+            
+            if let newIndex = newSectionForKey, let count = self.projectsList[key]?.count {
+                let rowIndex = count - 1
+                tableView.insertRows(at: [IndexPath(row: rowIndex, section: newIndex)], with: .automatic)
+            }
+        }, completion: { _ in
+            if let newIndex = newSectionForKey {
+                self.tableView.reloadSections(IndexSet(integer: newIndex), with: .none)
+            }
+        })
+    }
+
+    func removeProject(_ project: NXProject) {
+        let type = NXProjectType(rawValue: project.projectConfig.type)
+        let key = {
+            switch type {
+            case .app: return "applications"
+            case .utility: return "utilities"
+            default: return "unknown"
+            }
+        }()
+        
+        guard var list = self.projectsList[key] else { return }
+        
+        let oldSections = projectsList.keys.sorted { sortKeys($0, $1) }
+        let oldSectionForKey = oldSections.firstIndex(of: key)
+        let oldRow = list.firstIndex { $0.path == project.path }
+        
+        list.removeAll { $0.path == project.path }
+        
+        if list.isEmpty {
+            self.projectsList.removeValue(forKey: key)
+        } else {
+            self.projectsList[key] = list
+        }
+        
+        let newSections = updateSections()
+        let newSectionForKey = newSections.firstIndex(of: key)
+        
+        tableView.performBatchUpdates({
+            if let oldIndex = oldSectionForKey, let oldRow = oldRow {
+                tableView.deleteRows(at: [IndexPath(row: oldRow, section: oldIndex)], with: .automatic)
+            }
+            
+            if let oldIndex = oldSectionForKey, let newIndex = newSectionForKey, oldIndex != newIndex {
+                tableView.deleteSections(IndexSet(integer: oldIndex), with: .fade)
+                tableView.insertSections(IndexSet(integer: newIndex), with: .fade)
+            } else if oldSectionForKey != nil && newSectionForKey == nil {
+                tableView.deleteSections(IndexSet(integer: oldSectionForKey!), with: .fade)
+            }
+        }, completion: { _ in
+            if let newIndex = newSectionForKey {
+                self.tableView.reloadSections(IndexSet(integer: newIndex), with: .none)
+            }
+        })
+    }
+
+    private func updateSections() -> [String] {
+        return projectsList
+            .filter { !$0.value.isEmpty }
+            .sorted { sortKeys($0.key, $1.key) }
+            .map { $0.key }
+    }
+
+    private func sortKeys(_ a: String, _ b: String) -> Bool {
+        let keyA = a.lowercased()
+        let keyB = b.lowercased()
+        if keyA == "applications" { return true }
+        if keyB == "applications" { return false }
+        if keyA == "unknown" { return false }
+        if keyB == "unknown" { return true }
+        return keyA < keyB
     }
     
     func createProject(mode: NXProjectType) {
@@ -105,19 +220,14 @@ import UIKit
                 bundleid = textFieldArray[1].text!
             }
             
-            self.projects.append(NXProject.createProject(
+            if let project = NXProject.createProject(
                 atPath: self.path,
                 withName: name,
                 withBundleIdentifier: bundleid,
                 withType: mode
-            ))
-            
-            let newIndexPath = IndexPath(row: self.projects.count - 1, section: 0)
-            
-            self.tableView.beginUpdates()
-            self.tableView.insertRows(at: [newIndexPath], with: .automatic)
-            self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
-            self.tableView.endUpdates()
+            ) {
+                addProject(project)
+            }
         }
         
         alert.addAction(cancelAction)
@@ -130,7 +240,10 @@ import UIKit
         super.viewDidAppear(animated)
         
         if let indexPath = sessionIndex {
-            let selectedProject: NXProject = self.projects[indexPath.row]
+            let keys = Array(self.projectsList.keys).sorted()
+            let key = keys[indexPath.section]
+            let sectionProjects = self.projectsList[key] ?? []
+            let selectedProject: NXProject = sectionProjects[indexPath.row]
             selectedProject.reload()
             self.tableView.reloadRows(at: [indexPath], with: .none)
             sessionIndex = nil
@@ -138,16 +251,28 @@ import UIKit
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return "Applications (\(projects.count))"
+        let keys = Array(self.projectsList.keys).sorted()
+        let key = keys[section]
+        let sectionProjects = self.projectsList[key] ?? []
+        return "\(key) (\(sectionProjects.count))"
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return projects.count
+        let keys = Array(self.projectsList.keys).sorted()
+        let key = keys[section]
+        let sectionProjects = self.projectsList[key] ?? []
+        return sectionProjects.count
+    }
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return self.projectsList.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let selectedProject: NXProject = self.projects[indexPath.row]
-        return NXProjectTableCell(project: selectedProject)
+        let keys = Array(self.projectsList.keys).sorted()
+        let key = keys[indexPath.section]
+        let sectionProjects = self.projectsList[key] ?? []
+        return NXProjectTableCell(project: sectionProjects[indexPath.row])
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -155,7 +280,11 @@ import UIKit
         
         sessionIndex = indexPath
         
-        let selectedProject: NXProject = self.projects[indexPath.row]
+        let keys = Array(self.projectsList.keys).sorted()
+        let key = keys[indexPath.section]
+        let sectionProjects = self.projectsList[key] ?? []
+        
+        let selectedProject: NXProject = sectionProjects[indexPath.row]
         
         if UIDevice.current.userInterfaceIdiom == .pad {
             let padFileVC: MainSplitViewController = MainSplitViewController(project: selectedProject)
@@ -172,14 +301,22 @@ import UIKit
             let export: UIAction = UIAction(title: "Export", image: UIImage(systemName: "square.and.arrow.up.fill")) { [weak self] _ in
                 DispatchQueue.global().async {
                     guard let self = self else { return }
-                    let project = self.projects[indexPath.row]
+                    
+                    let keys = Array(self.projectsList.keys).sorted()
+                    let key = keys[indexPath.section]
+                    let sectionProjects = self.projectsList[key] ?? []
+                    let project = sectionProjects[indexPath.row]
+                    
                     zipDirectoryAtPath(project.path, "\(NSTemporaryDirectory())/\(project.projectConfig.displayName!).zip", true)
                     share(url: URL(fileURLWithPath: "\(NSTemporaryDirectory())/\(project.projectConfig.displayName!).zip"), remove: true)
                 }
             }
             
             let item: UIAction = UIAction(title: "Remove", image: UIImage(systemName: "trash.fill"), attributes: .destructive) { _ in
-                let project = self.projects[indexPath.row]
+                let keys = Array(self.projectsList.keys).sorted()
+                let key = keys[indexPath.section]
+                let sectionProjects = self.projectsList[key] ?? []
+                let project = sectionProjects[indexPath.row]
                 
                 self.presentConfirmationAlert(
                     title: "Warning",
@@ -189,16 +326,17 @@ import UIKit
                 { [weak self] in
                     guard let self = self else { return }
                     NXProject.remove(project)
-                    self.projects.remove(at: indexPath.row)
-                    self.tableView.beginUpdates()
-                    self.tableView.deleteRows(at: [indexPath], with: .automatic)
-                    self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
-                    self.tableView.endUpdates()
+                    removeProject(project)
                 }
             }
             
             let settings: UIAction = UIAction(title: "Settings", image: UIImage(systemName: "gear")) { _ in
-                let settingsViewController: UINavigationController = UINavigationController(rootViewController: ProjectSettingsViewController(style: .insetGrouped, project: self.projects[indexPath.row]))
+                let keys = Array(self.projectsList.keys).sorted()
+                let key = keys[indexPath.section]
+                let sectionProjects = self.projectsList[key] ?? []
+                let project = sectionProjects[indexPath.row]
+                
+                let settingsViewController: UINavigationController = UINavigationController(rootViewController: ProjectSettingsViewController(style: .insetGrouped, project: project))
                 settingsViewController.modalPresentationStyle = .formSheet
                 settingsViewController.presentationController?.delegate = self
                 self.present(settingsViewController, animated: true)
@@ -220,12 +358,9 @@ import UIKit
             try FileManager.default.moveItem(atPath: extractFirst.appendingPathComponent(items.first ?? "").path, toPath: projectPath)
             try FileManager.default.removeItem(at: extractFirst)
             
-            self.projects.append(NXProject(path: projectPath))
-            let newIndexPath = IndexPath(row: self.projects.count - 1, section: 0)
-            self.tableView.beginUpdates()
-            self.tableView.insertRows(at: [newIndexPath], with: .automatic)
-            self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
-            self.tableView.endUpdates()
+            if let project = NXProject(path: projectPath) {
+                addProject(project)
+            }
         } catch {
             NotificationServer.NotifyUser(level: .error, notification: error.localizedDescription)
         }
