@@ -101,8 +101,10 @@ import UIKit
             
             let newIndexPath = IndexPath(row: self.projects.count - 1, section: 0)
             
+            self.tableView.beginUpdates()
             self.tableView.insertRows(at: [newIndexPath], with: .automatic)
             self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
+            self.tableView.endUpdates()
         }
         
         alert.addAction(cancelAction)
@@ -175,8 +177,10 @@ import UIKit
                     guard let self = self else { return }
                     NXProject.remove(project)
                     self.projects.remove(at: indexPath.row)
+                    self.tableView.beginUpdates()
                     self.tableView.deleteRows(at: [indexPath], with: .automatic)
                     self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
+                    self.tableView.endUpdates()
                 }
             }
             
@@ -205,8 +209,10 @@ import UIKit
             
             self.projects.append(NXProject(path: projectPath))
             let newIndexPath = IndexPath(row: self.projects.count - 1, section: 0)
+            self.tableView.beginUpdates()
             self.tableView.insertRows(at: [newIndexPath], with: .automatic)
             self.tableView.reloadSections(IndexSet(integer: 0), with: .none)
+            self.tableView.endUpdates()
         } catch {
             NotificationServer.NotifyUser(level: .error, notification: error.localizedDescription)
         }
