@@ -34,7 +34,7 @@
 @property (nonatomic) LDEProcess *process;
 @property (nonatomic) NSString *sceneID;
 @property(nonatomic) void(^nextUpdateSettingsBlock)(UIMutableApplicationSceneSettings *settings);
-@property(nonatomic) id<LDEAppSceneDelegate> delegate;
+@property(nonatomic, weak) id<LDEAppSceneDelegate> delegate;
 @property(nonatomic) CGFloat scaleRatio;
 @property(nonatomic) UIView* contentView;
 @property(nonatomic) _UIScenePresenter *presenter;
