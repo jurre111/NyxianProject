@@ -25,6 +25,11 @@
 
 typedef int NXProjectType NS_TYPED_ENUM;
 static NXProjectType const NXProjectTypeApp = 1;
+static NXProjectType const NXProjectTypeUtility = 2;    /* Not implemented yet */
+static NXProjectType const NXProjectTypeLua = 3;        /* Not implemented yet */
+static NXProjectType const NXProjectTypePython = 4;     /* Not implemented yet */
+static NXProjectType const NXProjectTypeNyxian = 5;     /* Not implemented yet */
+static NXProjectType const NXProjectTypeWeb = 6;        /* Not implemented yet */
 
 @interface NXProjectConfig : NXPlistHelper
 
