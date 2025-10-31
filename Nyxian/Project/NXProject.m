@@ -154,7 +154,9 @@
                 @"/Config/Project.plist": @{
                     @"LDEExecutable": name,
                     @"LDEDisplayName": name,
-                    @"LDEProjectType": @(type)
+                    @"LDEProjectType": @(type),
+                    @"LDECompilerFlags": @[@"-fobjc-arc"],
+                    @"LDELinkerFlags": @[@"-ObjC", @"-lc", @"-lc++", @"-framework", @"Foundation", @"-framework", @"UIKit"]
                 },
                 @"/Config/Editor.plist": @{
                     @"LDEShowLines": @(YES),
