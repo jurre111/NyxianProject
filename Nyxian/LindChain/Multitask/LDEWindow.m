@@ -81,7 +81,7 @@ void UIKitFixesInit(void) {
         UIImage *maximizeImage = [UIImage systemImageNamed:@"arrow.up.left.and.arrow.down.right.circle.fill"];
         UIImageConfiguration *maximizeConfig = [UIImageSymbolConfiguration configurationWithPointSize:16.0 weight:UIImageSymbolWeightMedium];
         maximizeImage = [maximizeImage imageWithConfiguration:maximizeConfig];
-        self.maximizeButton = [[UIBarButtonItem alloc] initWithImage:maximizeImage style:UIBarButtonItemStylePlain target:self action:@selector(maximizeWindow)];
+        self.maximizeButton = [[UIBarButtonItem alloc] initWithImage:maximizeImage style:UIBarButtonItemStylePlain target:self action:@selector(maximizeButtonPressed)];
         self.maximizeButton.tintColor = [UIColor systemGreenColor];
         
         
@@ -164,7 +164,7 @@ void UIKitFixesInit(void) {
         // MARK: Suppose to only run on phones
         if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
         {
-            [self maximizeWindowNoAnim];
+            [self maximizeWindow:NO];
             UIPanGestureRecognizer *pullDownGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePullDown:)];
             [self.navigationBar addGestureRecognizer:pullDownGesture];
         }
@@ -325,12 +325,12 @@ void UIKitFixesInit(void) {
     });
 }
 
-- (void)maximizeWindow {
+- (void)maximizeWindow:(BOOL)animated {
     [self.appSceneVC resizeActionStart];
     if (self.isMaximized) {
         CGRect maxFrame = UIEdgeInsetsInsetRect(self.view.window.frame, self.view.window.safeAreaInsets);
         CGRect newFrame = CGRectMake(self.originalFrame.origin.x * maxFrame.size.width, self.originalFrame.origin.y * maxFrame.size.height, self.originalFrame.size.width, self.originalFrame.size.height);
-        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:animated ? 0.3 : 0.0 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.view.frame = newFrame;
             self.view.layer.borderWidth = 1;
             self.resizeHandle.alpha = 1;
@@ -353,7 +353,7 @@ void UIKitFixesInit(void) {
     } else {
         [self.view.superview bringSubviewToFront:self.view];
         [self updateOriginalFrame];
-        [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+        [UIView animateWithDuration:animated ? 0.3 : 0.0 delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             self.isMaximized = YES;
             [self updateVerticalConstraints];
             
@@ -378,60 +378,10 @@ void UIKitFixesInit(void) {
     }
 }
 
-- (void)maximizeWindowNoAnim {
-    [self.appSceneVC resizeActionStart];
-    if (self.isMaximized) {
-        // Restore to windowed
-        CGRect maxFrame = UIEdgeInsetsInsetRect(self.view.window.frame, self.view.window.safeAreaInsets);
-        CGRect newFrame = CGRectMake(self.originalFrame.origin.x * maxFrame.size.width,
-                                     self.originalFrame.origin.y * maxFrame.size.height,
-                                     self.originalFrame.size.width,
-                                     self.originalFrame.size.height);
-
-        self.view.frame = newFrame;
-        self.view.layer.borderWidth = 1;
-        self.resizeHandle.alpha = 1;
-
-        if (self.appSceneVC) {
-            [self.appSceneVC.presenter.scene updateSettingsWithBlock:^(UIMutableApplicationSceneSettings *settings) {
-                [self updateWindowedFrameWithSettings:settings];
-            }];
-        }
-
-        self.isMaximized = NO;
-        UIImage *maximizeImage = [UIImage systemImageNamed:@"arrow.up.left.and.arrow.down.right.circle.fill"];
-        UIImageConfiguration *maximizeConfig = [UIImageSymbolConfiguration configurationWithPointSize:16.0 weight:UIImageSymbolWeightMedium];
-        self.maximizeButton.image = [maximizeImage imageWithConfiguration:maximizeConfig];
-
-        if (self.appSceneVC) {
-            [self.appSceneVC resizeActionEnd];
-        }
-    } else {
-        // Maximize
-        [self.view.superview bringSubviewToFront:self.view];
-        [self updateOriginalFrame];
-
-        self.isMaximized = YES;
-        [self updateVerticalConstraints];
-        self.view.layer.borderWidth = 0;
-        self.resizeHandle.alpha = 0;
-
-        if (self.appSceneVC) {
-            [self.appSceneVC.presenter.scene updateSettingsWithBlock:^(UIMutableApplicationSceneSettings *settings) {
-                [self updateMaximizedFrameWithSettings:settings];
-            }];
-        }
-
-        UIImage *restoreImage = [UIImage systemImageNamed:@"arrow.down.right.and.arrow.up.left.circle.fill"];
-        UIImageConfiguration *restoreConfig = [UIImageSymbolConfiguration configurationWithPointSize:16.0 weight:UIImageSymbolWeightMedium];
-        self.maximizeButton.image = [restoreImage imageWithConfiguration:restoreConfig];
-
-        if (self.appSceneVC) {
-            [self.appSceneVC resizeActionEnd];
-        }
-    }
+- (void)maximizeButtonPressed
+{
+    [self maximizeWindow:YES];
 }
-
 
 - (void)appSceneVC:(LDEAppScene*)vc didInitializeWithError:(NSError *)error {
     // TODO: Fix it
