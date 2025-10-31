@@ -20,12 +20,6 @@
 #import <UI/TableCells/NXProjectTableCell.h>
 #import <Project/NXProject.h>
 
-@interface NXProjectTableCell ()
-
-//@property (nonatomic,strong,readonly) NXProject *project;
-
-@end
-
 @implementation NXProjectTableCell
 
 - (instancetype)initWithProject:(NXProject *)project
@@ -83,7 +77,7 @@
     self.layoutMargins = UIEdgeInsetsZero;
     self.preservesSuperviewLayoutMargins = NO;
     
-    if(UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad)
+    if(UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone)
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }
 
