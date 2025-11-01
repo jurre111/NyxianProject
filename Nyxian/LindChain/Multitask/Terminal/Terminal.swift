@@ -53,7 +53,7 @@ import UIKit
         stdoutHandle.readabilityHandler = { [weak self] fileHandle in
             let logData = fileHandle.availableData
             if !logData.isEmpty, var logString = String(data: logData, encoding: .utf8) {
-                logString = logString.replacingOccurrences(of: "\n", with: "\n\r").replacingOccurrences(of: "\r", with: "\n\r")
+                logString = logString.replacingOccurrences(of: "\r", with: "\n\r")
                 if let normalizedData = logString.data(using: .utf8) {
                     let normalizedByteArray = Array(normalizedData)
                     let d = normalizedByteArray[...]
@@ -66,7 +66,7 @@ import UIKit
                         let end = min (next+blocksize, last)
                         let chunk = sliced [next..<end]
                         
-                        DispatchQueue.main.sync {
+                        DispatchQueue.main.async {
                             guard let self = self else { return }
                             self.feed(byteArray: chunk)
                         }
@@ -123,5 +123,43 @@ import UIKit
             _ = self.resignFirstResponder()
             _ = self.becomeFirstResponder()
         }
+    }
+}
+
+@objc class TerminalViewController: UIViewController {
+    let terminalView: NyxianTerminal
+    var bottomConstraint: NSLayoutConstraint!
+    
+    @objc public init (
+        title: String,
+        stdoutFD: Int32,
+        stdinFD: Int32
+    ){
+        terminalView = NyxianTerminal(frame: CGRectZero, title: title, stdoutFD: stdoutFD, stdinFD: stdinFD)
+        
+        super.init(nibName: nil, bundle: nil)
+        self.title = title
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.addSubview(self.terminalView)
+        
+        self.terminalView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            self.terminalView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
+            self.terminalView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            self.terminalView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            self.terminalView.keyboardLayoutGuide.topAnchor.constraint(equalTo: self.terminalView.bottomAnchor)
+        ])
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
     }
 }

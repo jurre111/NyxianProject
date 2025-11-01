@@ -300,7 +300,10 @@ class Builder {
                     //close(stdinPipe[1])
                     
                     DispatchQueue.main.async {
-                        LDEMultitaskManager.shared().addSubview(NyxianTerminal(frame: LDEMultitaskManager.shared().frame, title: self.project.projectConfig.displayName, stdoutFD: stdoutPipe[0], stdinFD: stdinPipe[1]))
+                        let terminalVC: TerminalViewController = TerminalViewController(title: self.project.projectConfig.displayName, stdoutFD: stdoutPipe[0], stdinFD: stdinPipe[1])
+                        let terminalNVC: UINavigationController = UINavigationController(rootViewController: terminalVC)
+                        
+                        LDEMultitaskManager.shared().rootViewController?.present(terminalNVC, animated: true)
                     }
                 }
             }
