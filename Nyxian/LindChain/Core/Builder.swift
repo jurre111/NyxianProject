@@ -99,8 +99,9 @@ class Builder {
             return String(cString: buffer)
         }
         
-        if(project.projectConfig.type != 1) {
-            throw NSError(domain: "com.cr4zy.nyxian.builder.headsup", code: 1, userInfo: [NSLocalizedDescriptionKey:"Project type \(project.projectConfig.type) is unknown"])
+        let type = project.projectConfig.type
+        if(type != 1 && type != 2) {
+            throw NSError(domain: "com.cr4zy.nyxian.builder.headsup", code: 1, userInfo: [NSLocalizedDescriptionKey:"Project type \(type) is unknown"])
         }
         
         func operatingSystemVersion(from string: String) -> OperatingSystemVersion? {
@@ -251,28 +252,34 @@ class Builder {
     
     func install(buildType: Builder.BuildType) throws {
         if(buildType == .RunningApp) {
-            let semaphore = DispatchSemaphore(value: 0)
-            var nsError: NSError? = nil
-            if LCUtils.certificateData() == nil {
-                throw NSError(domain: "com.cr4zy.nyxian.builder.install", code: 1, userInfo: [NSLocalizedDescriptionKey:"No code signature present to perform signing, import code signature in Settings > Miscellanous > Import Certificate. Note that the code signature must be the same code signature used to sign Nyxian."])
-            }
-            LCAppInfo(bundlePath: project.bundlePath)?.patchExecAndSignIfNeed(completionHandler: { [weak self] result, errorDescription in
-                guard let self = self else { return }
-                if result {
-                    if(LDEApplicationWorkspace.shared().installApplication(atBundlePath: self.project.bundlePath)) {
-                        LDEProcessManager.shared().spawnProcess(withBundleIdentifier: project.projectConfig.bundleid, with: LDEProcessConfiguration.userApplication(), doRestartIfRunning: true)
-                    } else {
-                        nsError = NSError(domain: "com.cr4zy.nyxian.builder.install", code: 1, userInfo: [NSLocalizedDescriptionKey:"Failed to install application"])
-                    }
-                } else {
-                    nsError = NSError(domain: "com.cr4zy.nyxian.builder.install", code: 1, userInfo: [NSLocalizedDescriptionKey:errorDescription ?? "Unknown error happened signing application"])
+            if self.project.projectConfig.type == NXProjectType.app.rawValue {
+                let semaphore = DispatchSemaphore(value: 0)
+                var nsError: NSError? = nil
+                if LCUtils.certificateData() == nil {
+                    throw NSError(domain: "com.cr4zy.nyxian.builder.install", code: 1, userInfo: [NSLocalizedDescriptionKey:"No code signature present to perform signing, import code signature in Settings > Miscellanous > Import Certificate. Note that the code signature must be the same code signature used to sign Nyxian."])
                 }
-                semaphore.signal()
-            }, progressHandler: { progress in }, forceSign: false)
-            semaphore.wait()
-            
-            if let nsError = nsError {
-                throw nsError
+                LCAppInfo(bundlePath: project.bundlePath)?.patchExecAndSignIfNeed(completionHandler: { [weak self] result, errorDescription in
+                    guard let self = self else { return }
+                    if result {
+                        if(LDEApplicationWorkspace.shared().installApplication(atBundlePath: self.project.bundlePath)) {
+                            LDEProcessManager.shared().spawnProcess(withBundleIdentifier: project.projectConfig.bundleid, with: LDEProcessConfiguration.userApplication(), doRestartIfRunning: true)
+                        } else {
+                            nsError = NSError(domain: "com.cr4zy.nyxian.builder.install", code: 1, userInfo: [NSLocalizedDescriptionKey:"Failed to install application"])
+                        }
+                    } else {
+                        nsError = NSError(domain: "com.cr4zy.nyxian.builder.install", code: 1, userInfo: [NSLocalizedDescriptionKey:errorDescription ?? "Unknown error happened signing application"])
+                    }
+                    semaphore.signal()
+                }, progressHandler: { progress in }, forceSign: false)
+                semaphore.wait()
+                
+                if let nsError = nsError {
+                    throw nsError
+                }
+            } else if self.project.projectConfig.type == NXProjectType.utility.rawValue {
+                if let path: String = LDEApplicationWorkspace.shared().fastpathUtility(self.project.machoPath) {
+                    LDEProcessManager.shared().spawnProcess(withPath: path, withArguments: [], withEnvironmentVariables: [:], with: nil, with: LDEProcessConfiguration(parentProcessIdentifier: getpid(), withUserIdentifier: 501, withGroupIdentifier: 501, withEntitlements: PEEntitlement.defaultUserApplication), process: nil)
+                }
             }
         } else {
             try? self.package()

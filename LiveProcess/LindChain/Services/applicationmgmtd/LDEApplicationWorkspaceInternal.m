@@ -65,6 +65,12 @@ bool checkCodeSignature(const char* path);
                                attributes:nil
                                     error:nil];
     
+    if(![fileManager fileExistsAtPath:self.binaryURL.path])
+        [fileManager createDirectoryAtURL:self.binaryURL
+              withIntermediateDirectories:YES
+                               attributes:nil
+                                    error:nil];
+    
     // Enumerating all app bundles
     NSArray<NSURL*> *uuidURLs = [fileManager contentsOfDirectoryAtURL:self.applicationsURL includingPropertiesForKeys:nil options:0 error:nil];
     self.bundles = [[NSMutableDictionary alloc] init];
@@ -249,6 +255,7 @@ bool checkCodeSignature(const char* path);
     NSURL *url = [NSURL fileURLWithPath:object.path];
     NSString *fastPath = [[[[LDEApplicationWorkspaceInternal shared] binaryURL] path] stringByAppendingPathComponent:[url lastPathComponent]];
     [object writeOut:[[[[LDEApplicationWorkspaceInternal shared] binaryURL] path] stringByAppendingPathComponent:[url lastPathComponent]]];
+    environment_proxy_sign_macho(fastPath);
     reply(fastPath, checkCodeSignature([fastPath UTF8String]));
 }
 

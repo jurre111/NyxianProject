@@ -213,7 +213,16 @@
 - (NSString*)resourcesPath { return [NSString stringWithFormat:@"%@/Resources", self.path]; }
 - (NSString*)payloadPath { return [NSString stringWithFormat:@"%@/Payload", self.cachePath]; }
 - (NSString*)bundlePath { return [NSString stringWithFormat:@"%@/%@.app", [self payloadPath], [[self projectConfig] executable]]; }
-- (NSString*)machoPath { return [NSString stringWithFormat:@"%@/%@", [self bundlePath], [[self projectConfig] executable]]; }
+- (NSString*)machoPath {
+    if(self.projectConfig.type == NXProjectTypeApp)
+    {
+        return [NSString stringWithFormat:@"%@/%@", [self bundlePath], [[self projectConfig] executable]];
+    }
+    else
+    {
+        return [NSString stringWithFormat:@"%@/%@", [self cachePath], [[self projectConfig] executable]];
+    }
+}
 - (NSString*)packagePath { return [NSString stringWithFormat:@"%@/%@.ipa", self.cachePath, [[self projectConfig] executable]]; }
 - (NSString*)homePath { return [NSString stringWithFormat:@"%@/data", self.cachePath]; }
 - (NSString*)temporaryPath { return [NSString stringWithFormat:@"%@/data/tmp", self.cachePath]; }

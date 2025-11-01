@@ -146,6 +146,7 @@
     self = [super init];
     if([coder respondsToSelector:@selector(decodeXPCObjectOfType:forKey:)])
     {
+        _path = [coder decodeObjectOfClass:[NSString class] forKey:@"path"];
         struct _xpc_type_s *dictType = (struct _xpc_type_s *)XPC_TYPE_DICTIONARY;
         NSObject<OS_xpc_object> *obj = [(id)coder decodeXPCObjectOfType:dictType
                                                                  forKey:@"fd"];
@@ -165,7 +166,6 @@
                 return nil;
             }
         }
-        _path = [coder decodeObjectForKey:@"path"];
     }
     return self;
 }

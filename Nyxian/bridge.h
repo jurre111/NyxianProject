@@ -36,6 +36,7 @@
 #import <LindChain/ProcEnvironment/Surface/surface.h>
 #import <LindChain/ProcEnvironment/Server/Trust.h>
 #import <LindChain/LaunchServices/LaunchService.h>
+#import <LindChain/ProcEnvironment/Object/MachOObject.h>
 
 /*
  Project
