@@ -59,6 +59,10 @@
  */
 + (instancetype)currentMap;
 
++ (instancetype)emptyMap;
+
+- (void)insertStdPipe:(int*)stdoutPipe StdErrPipe:(int*)stderrPipe StdInPipe:(int*)stdinPipe;
+
 /*!
  @method copy_fd_map
  @abstract Copies the file descriptor map of the current process.

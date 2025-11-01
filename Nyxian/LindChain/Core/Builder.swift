@@ -278,7 +278,30 @@ class Builder {
                 }
             } else if self.project.projectConfig.type == NXProjectType.utility.rawValue {
                 if let path: String = LDEApplicationWorkspace.shared().fastpathUtility(self.project.machoPath) {
-                    LDEProcessManager.shared().spawnProcess(withPath: path, withArguments: [], withEnvironmentVariables: [:], with: nil, with: LDEProcessConfiguration(parentProcessIdentifier: getpid(), withUserIdentifier: 501, withGroupIdentifier: 501, withEntitlements: PEEntitlement.defaultUserApplication), process: nil)
+                    var stdoutPipe = [Int32](repeating: 0, count: 2)
+                    var stderrPipe = [Int32](repeating: 0, count: 2)
+                    var stdinPipe  = [Int32](repeating: 0, count: 2)
+                    
+                    guard pipe(&stdoutPipe) == 0,
+                          pipe(&stderrPipe) == 0,
+                          pipe(&stdinPipe) == 0 else {
+                        fatalError("pipe() failed")
+                    }
+                    
+                    let fdMap: FDMapObject = FDMapObject.emptyMap()
+                    fdMap.insertStdPipe(&stdoutPipe, stdErrPipe: &stderrPipe, stdInPipe: &stdinPipe)
+                    LDEProcessManager.shared().spawnProcess(withPath: path, withArguments: [], withEnvironmentVariables: [:], with: fdMap, with: LDEProcessConfiguration(parentProcessIdentifier: getpid(), withUserIdentifier: 501, withGroupIdentifier: 501, withEntitlements: PEEntitlement.defaultUserApplication), process: nil)
+                    
+                    //close(stdoutPipe[0])
+                    //close(stdoutPipe[1])
+                    close(stderrPipe[0])
+                    close(stderrPipe[1])
+                    //close(stdinPipe[0])
+                    //close(stdinPipe[1])
+                    
+                    DispatchQueue.main.async {
+                        LDEMultitaskManager.shared().addSubview(NyxianTerminal(frame: LDEMultitaskManager.shared().frame, title: self.project.projectConfig.displayName, stdoutFD: stdoutPipe[0], stdinFD: stdinPipe[1]))
+                    }
                 }
             }
         } else {
