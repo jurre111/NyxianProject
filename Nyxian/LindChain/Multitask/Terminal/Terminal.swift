@@ -51,28 +51,19 @@ import UIKit
         _ = self.becomeFirstResponder()
         
         stdoutHandle.readabilityHandler = { [weak self] fileHandle in
-            let logData = fileHandle.availableData
-            if !logData.isEmpty, var logString = String(data: logData, encoding: .utf8) {
-                logString = logString.replacingOccurrences(of: "\r", with: "\n\r")
-                if let normalizedData = logString.data(using: .utf8) {
-                    let normalizedByteArray = Array(normalizedData)
-                    let d = normalizedByteArray[...]
-                    let sliced = Array(d) [0...]
-                    let blocksize = 1024
-                    var next = 0
-                    let last = sliced.endIndex
-                    
-                    while next < last {
-                        let end = min (next+blocksize, last)
-                        let chunk = sliced [next..<end]
-                        
-                        DispatchQueue.main.async {
-                            guard let self = self else { return }
-                            self.feed(byteArray: chunk)
-                        }
-                        next = end
-                    }
+            guard let self = self else { return }
+            let data = fileHandle.availableData
+            guard !data.isEmpty else { return }
+            
+            let fixed = data.reduce(into: [UInt8]()) { buffer, byte in
+                if byte == 0x0A {
+                    buffer.append(0x0D)
                 }
+                buffer.append(byte)
+            }
+            
+            DispatchQueue.main.async {
+                self.feed(byteArray: fixed[...])
             }
         }
     }
