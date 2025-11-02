@@ -120,13 +120,17 @@ import UIKit
 @objc class TerminalViewController: UIViewController {
     let terminalView: NyxianTerminal
     var bottomConstraint: NSLayoutConstraint!
+    let callback: () -> Void
     
     @objc public init (
         title: String,
         stdoutFD: Int32,
-        stdinFD: Int32
+        stdinFD: Int32,
+        disappearCallback: @escaping () -> Void
     ){
         terminalView = NyxianTerminal(frame: CGRectZero, title: title, stdoutFD: stdoutFD, stdinFD: stdinFD)
+        
+        callback = disappearCallback
         
         super.init(nibName: nil, bundle: nil)
         self.title = title
@@ -152,5 +156,6 @@ import UIKit
     
     override func viewDidDisappear(_ animated: Bool) {
         NotificationCenter.default.removeObserver(self)
+        self.callback()
     }
 }

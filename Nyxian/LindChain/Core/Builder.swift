@@ -290,17 +290,16 @@ class Builder {
                     
                     let fdMap: FDMapObject = FDMapObject.emptyMap()
                     fdMap.insertStdPipe(&stdoutPipe, stdErrPipe: &stderrPipe, stdInPipe: &stdinPipe)
-                    LDEProcessManager.shared().spawnProcess(withPath: path, withArguments: [], withEnvironmentVariables: [:], with: fdMap, with: LDEProcessConfiguration(parentProcessIdentifier: getpid(), withUserIdentifier: 501, withGroupIdentifier: 501, withEntitlements: PEEntitlement.defaultUserApplication), process: nil)
+                    var process: LDEProcess? = nil
+                    LDEProcessManager.shared().spawnProcess(withPath: path, withArguments: [], withEnvironmentVariables: [:], with: fdMap, with: LDEProcessConfiguration(parentProcessIdentifier: getpid(), withUserIdentifier: 501, withGroupIdentifier: 501, withEntitlements: PEEntitlement.defaultUserApplication), process: &process)
                     
-                    //close(stdoutPipe[0])
-                    //close(stdoutPipe[1])
                     close(stderrPipe[0])
                     close(stderrPipe[1])
-                    //close(stdinPipe[0])
-                    //close(stdinPipe[1])
                     
                     DispatchQueue.main.async {
-                        let terminalVC: TerminalViewController = TerminalViewController(title: self.project.projectConfig.displayName, stdoutFD: stdoutPipe[0], stdinFD: stdinPipe[1])
+                        let terminalVC: TerminalViewController = TerminalViewController(title: self.project.projectConfig.displayName, stdoutFD: stdoutPipe[0], stdinFD: stdinPipe[1]) {
+                            process?.terminate()
+                        }
                         let terminalNVC: UINavigationController = UINavigationController(rootViewController: terminalVC)
                         
                         LDEMultitaskManager.shared().rootViewController?.present(terminalNVC, animated: true)
