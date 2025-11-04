@@ -100,7 +100,11 @@
     
     NSFileManager *defaultFileManager = [NSFileManager defaultManager];
     
-    NSArray *directoryList = @[@"",@"/Config",@"/Resources"];
+    NSMutableArray *directoryList = [NSMutableArray arrayWithArray:@[@"",@"/Config"]];
+    if(type == NXProjectTypeApp)
+    {
+        [directoryList addObject:@"/Resources"];
+    }
     for(NSString *directory in directoryList)
         [defaultFileManager createDirectoryAtPath:[NSString stringWithFormat:@"%@%@", projectPath, directory] withIntermediateDirectories:NO attributes:NULL error:nil];
     

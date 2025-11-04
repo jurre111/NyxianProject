@@ -72,7 +72,6 @@ import UIKit
         self.navigationItem.setRightBarButton(barbutton, animated: false)
         
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
-        self.tableView.rowHeight = 70
         
         let rawProjectsList = NXProject.listProjects(atPath: self.path) as! [String:[NXProject]]
         let filtered = rawProjectsList.filter { !$0.value.isEmpty }
@@ -364,5 +363,11 @@ import UIKit
         } catch {
             NotificationServer.NotifyUser(level: .error, notification: error.localizedDescription)
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let keys = Array(self.projectsList.keys).sorted()
+        let key = keys[indexPath.section]
+        return (key == "applications") ? 70 : 44;
     }
 }
