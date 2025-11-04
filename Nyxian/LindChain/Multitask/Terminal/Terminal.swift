@@ -47,7 +47,7 @@ import UIKit
         self.backgroundColor = .systemBackground
         self.nativeForegroundColor = gibDynamicColor(light: .label, dark: self.nativeForegroundColor)
         self.caretTextColor = .label
-        self.font = UIFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+        self.font = UIFont.monospacedSystemFont(ofSize: 10, weight: .regular)
         _ = self.becomeFirstResponder()
         
         stdoutHandle.readabilityHandler = { [weak self] fileHandle in
@@ -56,7 +56,11 @@ import UIKit
             guard !data.isEmpty else { return }
             
             let fixed = data.reduce(into: [UInt8]()) { buffer, byte in
+                var byte = byte
                 if byte == 0x0A {
+                    buffer.append(0x0D)
+                } else if byte == 0x0D {
+                    byte = 0x0A
                     buffer.append(0x0D)
                 }
                 buffer.append(byte)
