@@ -64,6 +64,13 @@ jobs:
           echo "PRODUCT_BUNDLE_IDENTIFIER = com.example.nyxian" >> PrivateConfig.xcconfig
           echo "CODE_SIGN_STYLE = Manual" >> PrivateConfig.xcconfig
 
+      - name: Fix Runestone Import
+        run: |
+          # Backup the original file
+          cp Nyxian/UI/CodeEditor/CodeEditor+Coordinator.swift Nyxian/UI/CodeEditor/CodeEditor+Coordinator.swift.bak
+          # Replace @testable import with regular import
+          sed -i '' 's/@testable import Runestone/import Runestone/' Nyxian/UI/CodeEditor/CodeEditor+Coordinator.swift
+
       - name: Archive
         env:
           scheme: ${{ steps.scheme.outputs.scheme }}
