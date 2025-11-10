@@ -57,6 +57,13 @@ jobs:
           chmod +x setup.sh
           ./setup.sh
 
+      - name: Create Private Config
+        run: |
+          echo "// Default configuration for CI builds" > PrivateConfig.xcconfig
+          echo "DEVELOPMENT_TEAM = " >> PrivateConfig.xcconfig
+          echo "PRODUCT_BUNDLE_IDENTIFIER = com.example.nyxian" >> PrivateConfig.xcconfig
+          echo "CODE_SIGN_STYLE = Manual" >> PrivateConfig.xcconfig
+
       - name: Archive
         env:
           scheme: ${{ steps.scheme.outputs.scheme }}
