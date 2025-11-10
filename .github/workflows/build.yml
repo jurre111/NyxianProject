@@ -64,18 +64,20 @@ jobs:
           file_to_build: ${{ steps.file_to_build.outputs.file_to_build }}
         run: |
           xcodebuild clean
-          xcodebuild archive -verbose \
+          xcodebuild archive \
+            -verbose \
             -archivePath "$archive_path" \
             -scheme "$scheme" \
             -"$filetype_parameter" "$file_to_build" \
             -destination 'generic/platform=iOS' \
             -sdk iphoneos \
             -configuration Release \
+            -derivedDataPath ./DerivedData \
             -allowProvisioningUpdates \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            ONLY_ACTIVE_ARCH=NO | xcpretty && exit ${PIPESTATUS[0]}
+            ONLY_ACTIVE_ARCH=NO
       - name: Tar Build Artifact
         run: tar -cvf "$archive_path.xcarchive.tar" "$archive_path.xcarchive"
       - name: Upload a Build Artifact
